@@ -10,8 +10,8 @@ public:
 	uint32 color;
 	Colored () : color(0xffffff) { }
 	virtual void draw () {
-		draw_color(color, this);
 		O::draw();
+		draw_color(color, this);
 	}
 };
 

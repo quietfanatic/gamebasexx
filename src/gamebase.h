@@ -45,13 +45,12 @@ struct Camera { coord x; coord y; coord w; coord h; };
 
 /////// Enums
 
-enum object_flags {
-	OBJ_NEW = 1,         // Run create routine when added.
-	OBJ_ACTIVE = 2,      // This object is functioning normally.
-	OBJ_DOOMED = 4,      // This object will be destroyed when it is removed.
-	OBJ_PERSISTENT = 8,  // Keep around when changing rooms.
-	OBJ_IMMORTAL = 16,   // This object's memory will never be automatically freed.
-};
+typedef int32 object_flags;
+#define OBJ_NEW 1         // Run create routine when added.
+#define OBJ_ACTIVE 2      // This object is functioning normally.
+#define OBJ_DOOMED 4      // This object will be destroyed when it is removed.
+#define OBJ_PERSISTENT 8  // Keep around when changing rooms.
+#define OBJ_IMMORTAL 16   // This object's memory will never be automatically freed.
 
 enum geometry {
 	GEOM_RECT,
@@ -114,7 +113,6 @@ void set_free();
 void garbage_collect();
 
 void register_object(Object* o);
-void remove_object(Object* o);
 
 
  // graphics.c

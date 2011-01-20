@@ -20,7 +20,7 @@ template <class O>
 struct Moving : public O {
 	coord xvel;
 	coord yvel;
-	Moving () : xvel(0), yvel(0) { }
+	Moving () : xvel(0*P), yvel(0*P) { }
 	virtual void move () {
 		this->x += xvel;
 		this->y += yvel;
@@ -58,27 +58,27 @@ struct Moving : public O {
 		long_coord x_yv;
 		long_coord y_xv;
 		if (yv > 0) {  // Going down
-			y_xv = (this->B() - other->T()) * (long_coord) xv;
+			y_xv = (this->B() - other->T()) *(long_coord) xv;
 			if (xvel > 0) {  // Going right
-				x_yv = (this->R() - other->L()) * (long_coord) yv;
+				x_yv = (this->R() - other->L()) *(long_coord) yv;
 				if (x_yv >= y_xv) r |= TOP;
 				if (x_yv <= y_xv) r |= LEFT;
 			}
 			else {  // Going left
-				x_yv = (other->R() - this->L()) * (long_coord) yv;
+				x_yv = (other->R() - this->L()) *(long_coord) yv;
 				if (x_yv >= -y_xv) r |= TOP;
 				if (x_yv <= -y_xv) r |= RIGHT;
 			}
 		}
 		else {  // Going up
-			y_xv = other->B() - this->T() * (long_coord) xv;
+			y_xv = (other->B() - this->T()) *(long_coord) xv;
 			if (xvel > 0) {  // Going right
-				x_yv = this->R() - other->L() * (long_coord) yv;
+				x_yv = (this->R() - other->L()) *(long_coord) yv;
 				if (-x_yv >= y_xv) r |= BOTTOM;
 				if (-x_yv <= y_xv) r |= LEFT;
 			}
 			else {  // Going left
-				x_yv = other->R() - this->L() * (long_coord) yv;
+				x_yv = (other->R() - this->L()) *(long_coord) yv;
 				if (-x_yv >= -y_xv) r |= BOTTOM;
 				if (-x_yv <= -y_xv) r |= RIGHT;
 			}
@@ -87,18 +87,18 @@ struct Moving : public O {
 	}
 
 	side collide (Object* other, collide_flags flags) {
-		coord oxv, oyv;
-		Moving* m = dynamic_cast<Moving*>(other);
-		if (m != NULL) {
-			oxv = m->xvel;
-			oyv = m->yvel;
-		}
-		else
-			oxv = oyv = 0;
-		if (!(flags&COLL_ONLYON)) flags |= ALLSIDES;
-		side dir = collision_direction(other);
-		dir &= (flags&ALLSIDES);
 		if (this->collision(other)) {
+			coord oxv, oyv;
+			Moving* m = dynamic_cast<Moving*>(other);
+			if (m != NULL) {
+				oxv = m->xvel;
+				oyv = m->yvel;
+			}
+			else
+				oxv = oyv = 0;
+			if (!(flags&COLL_ONLYON)) flags |= ALLSIDES;
+			side dir = collision_direction(other);
+			dir &= (flags&ALLSIDES);
 			if (flags&COLL_CONTACT) {  // Contact
 				if      (dir&TOP)    this->y = other->T() - this->b();
 				else if (dir&BOTTOM) this->y = other->B() + this->t();
@@ -139,7 +139,6 @@ struct Moving : public O {
 	template <class OtherClass = Object>
 	list<OtherClass*> get_collisions (bool order_by_hit = false) {
 		list<OtherClass*> colls;
-		OtherClass* other;
 		FOR_ALL_OF_TYPE(other, OtherClass) {
 			if (!this->collision(other)) continue;
 			if (!order_by_hit) {
@@ -160,21 +159,20 @@ struct Moving : public O {
 					xv -= m->xvel;
 					yv -= m->yvel;
 				}
-				uint i;
 				long_coord cmp = xv*other->x + yv*other->y;
 				 // Add to list, in order.
 				typeof(colls.begin()) cur;
-				if (cmp <= xv*(*colls.begin)->x + yv*(*colls.begin)->y) {
+				if (cmp <= xv*(*colls.begin())->x + yv*(*colls.begin())->y) {
 					colls.push_front(other);
 				}
 				else {
-					for (cur = colls.begin(); cur != colls.end; cur++) {
+					for (cur = colls.begin(); cur != colls.end(); cur++) {
 						if (cmp <= xv*(*cur)->x + yv*(*cur)->y) {
 							colls.insert(cur, other);
 							goto next;
 						}
 					}
-					colls.push_back(cur, other);
+					colls.push_back(other);
 				}
 			}
 			next: { }

@@ -138,8 +138,10 @@ void gamebase_main_loop() {
 
 
 		 // REMOVAL PHASE
-		for (cur = objects.begin(); cur != objects.end(); cur++) {
-			//objects.erase(cur);
+		for (cur = objects.begin(); cur != objects.end();) {
+			if ((*cur)->flags & OBJ_DOOMED)
+				objects.erase(cur++);
+			else cur++;
 		}
 		
 		garbage_collect();
@@ -158,8 +160,8 @@ void game_quit() {
 void set_video() {
 	SDL_setFramerate(&fpsm, current_room->fps);
 	game_window = SDL_SetVideoMode(
-		camera.w != 0 ? camera.w : current_room->w,
-		camera.h != 0 ? camera.h : current_room->h,
+		(camera.w != 0 ? camera.w : current_room->w)/P,
+		(camera.h != 0 ? camera.h : current_room->h)/P,
 		32,
 		window_flags|(game_fullscreen ? SDL_FULLSCREEN : 0)
 	);
@@ -185,9 +187,6 @@ void register_object(Object* o) {
 	}
 	objects.push_back(o);
 }
-
-
-
 
 
 // Memory management

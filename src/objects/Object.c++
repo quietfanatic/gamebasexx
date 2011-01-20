@@ -12,9 +12,10 @@ class Object : public gc {
 public:
 	coord x;
 	coord y;
+	object_flags flags;
 
 	 // Lower order => move first and draw first (behind others)
-	virtual float order () {return 0;}
+	virtual float order () {return 0*P;}
 	 // Events
 	virtual void create () {}
 	virtual void before_move () {}
@@ -23,13 +24,13 @@ public:
 	virtual void draw () {}
 	virtual void after_draw () {}
 	 // Shape
-	virtual coord l () {return 0;}
+	virtual coord l () {return 0*P;}
 	coord L () {return x-l();}
-	virtual coord t () {return 0;}
+	virtual coord t () {return 0*P;}
 	coord T () {return y-t();}
-	virtual coord r () {return 0;}
+	virtual coord r () {return 0*P;}
 	coord R () {return x+r();}
-	virtual coord b () {return 0;}
+	virtual coord b () {return 0*P;}
 	coord B () {return y+b();}
 	virtual geometry geom () {return GEOM_RECT;}
 
@@ -39,7 +40,7 @@ public:
 	}
 	
 	void remove () {
-		remove_object(this);
+		flags |= OBJ_DOOMED;
 	}
 
 	 // Collisions

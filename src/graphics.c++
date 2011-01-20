@@ -45,10 +45,10 @@ SDL_Surface* load_image(const char* filename) {
 
 void draw_color (uint32 color, coord l, coord t, coord r, coord b) {
 	SDL_Rect draw_rect = {
-		(int16)(l - camera.x),
-		(int16)(t - camera.y),
-		(uint16)(r - l),
-		(uint16)(b - t)
+		(int16)((l - camera.x)/P),
+		(int16)((t - camera.y)/P),
+		(uint16)((r - l)/P),
+		(uint16)((b - t/P))
 	};
 	SDL_FillRect(
 		game_window,
@@ -61,7 +61,7 @@ inline void draw_color (uint32 color, Object* o) {
 }
 
 void draw_surface (SDL_Surface* surface, coord x, coord y) {
-	SDL_Rect draw_rect = {(int16)(x - camera.x), (int16)(y - camera.y), 0, 0};
+	SDL_Rect draw_rect = {(int16)((x - camera.x)/P), (int16)((y - camera.y)/P), 0, 0};
 	SDL_BlitSurface(
 		surface,
 		NULL,

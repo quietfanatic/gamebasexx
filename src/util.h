@@ -7,15 +7,17 @@
  // Routine
 
 #define FOR_ALL_OBJECTS(obj) \
-	for (std::list<Object*>::iterator obj = objects.begin(); obj != objects.end(); obj++)
+	std::list<Object*>::iterator obj_ = objects.begin(); \
+	for (Object* obj = *obj_; obj_ != objects.end(); obj = *(++obj_))
 
 #define FOR_ALL_OF_TYPE(obj, type) \
-	FOR_ALL_OBJECTS(obj_) if (obj = dynamic_cast<type*>(obj_))
+	type* obj; \
+	FOR_ALL_OBJECTS(obj__) if (obj = dynamic_cast<type*>(obj__))
 
 #define FOR_COLLISIONS_BY_HIT(obj, type) \
-	object** _coll_list = get_collisions(self, type, ORDER_BY_HIT); \
-	uint _coll_i = 0; \
-	for (obj = (typeof(obj)) _coll_list[_coll_i]; obj; obj = (typeof(obj)) _coll_list[++_coll_i])
+	std::list<type*> _coll_list = get_collisions<type>(); \
+	std::list<type*>::iterator _coll_i = _coll_list.begin(); \
+	for (type* obj = *_coll_i; _coll_i != _coll_list.end(); (obj = *(++_coll_i)))
 
 #define PARENT_EVENT(parent, name) \
 	parent##_##name((void*) self)
