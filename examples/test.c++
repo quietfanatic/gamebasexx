@@ -16,7 +16,7 @@ int main() {
 	Q q;
 	q.x = 32;
 	q.y = 32;
-	q.c = 0xffffff;
+	q.color = 0xffffff;
 	q.insert();
 	game_play();
 	return 0;

@@ -16,7 +16,7 @@ struct Room {
 	coord h;           // Height of same
 	Camera camera_start;
 	float fps;         // Framerate of game
-	color background_color;  // Draw background unless NO_COLOR.
+	uint32 background_color;  // Draw background unless NO_COLOR.
 	uint ncontents;    // Number of starting objects
 	Object** contents; // Starting object
 

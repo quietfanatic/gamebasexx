@@ -26,7 +26,6 @@ typedef int8_t int8;
 typedef uint16 object_flags16;
 typedef uint16 geometry16;
 typedef uint8 side8;
-typedef uint32 color;
 #define NO_COLOR 0xff000000
 
 #include "coord.c++"
@@ -123,7 +122,7 @@ void remove_object(Object* o);
 
  SDL_Surface* load_image   (char* filename);
 SDL_Surface** split_strip  (SDL_Surface* image, uint width, uint height);
-         void draw_color   (color c, coord l, coord t, coord r, coord b);
+         void draw_color   (uint32 c, coord l, coord t, coord r, coord b);
          void draw_surface (SDL_Surface* surface, coord x, coord y);
 
 

@@ -7,9 +7,10 @@
 template <class O>
 class Colored : public O {
 public:
-	color c;
+	uint32 color;
+	Colored () : color(0xffffff) { }
 	virtual void draw () {
-		draw_color(c, this);
+		draw_color(color, this);
 		O::draw();
 	}
 };
