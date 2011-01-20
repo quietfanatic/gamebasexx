@@ -2,7 +2,7 @@
 #define _HAVE_GAMEBASE_CPP
 
 #include "gamebase.h"
-#include "objects/object.c++"
+#include "objects/Object.c++"
 #include "graphics.c++"
 #include "room.c++"
 
@@ -34,11 +34,11 @@ void gamebase_main_loop() {
 		 // CREATION PHASE
 
 		 // DRAWING PHASE
-		if (current_room->background_color != NO_COLOR) {
+		if (current_room->color != NO_COLOR) {
 			SDL_FillRect(
 				game_window,
 				NULL,
-				current_room->background_color
+				current_room->color
 			);
 		}
 //#ifdef GAMEBASE_CAREFUL

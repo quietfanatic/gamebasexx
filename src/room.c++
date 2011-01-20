@@ -1,6 +1,8 @@
 #ifndef _HAVE_ROOM_CPP
 #define _HAVE_ROOM_CPP
 
+#include "objects/Colored.c++"
+#include "objects/Resizable.c++"
 
 //struct Camera {
 //	coord x;
@@ -9,16 +11,15 @@
 //	coord h;
 //};
 
-struct Room {
-	coord x;           // Coordinate offset.  Not necessary at all.
-	coord y;
-	coord w;           // Width of game area; not necessarily window
-	coord h;           // Height of same
+struct Room : public Colored< Resizable<Object> > {
 	Camera camera_start;
 	float fps;         // Framerate of game
-	uint32 background_color;  // Draw background unless NO_COLOR.
 	uint ncontents;    // Number of starting objects
 	Object** contents; // Starting object
+	
+	Room () : camera_start((Camera){0, 0, 0, 0}), fps(30), ncontents(0), contents(NULL)
+		{ color = 0x000000; w = 640; h = 480; }
+	virtual geometry geom () { return GEOM_BOUNDARY; }
 
 	void start () {
 		game_init();
@@ -26,9 +27,6 @@ struct Room {
 		current_room = this;
 		 // Copy camera start
 		camera = camera_start;
-		 // Create game boundary
-	//	game_boundary = Boundary;
-	//		0, 0, w, h
 		 // Create this room's starting objects
 		// UNIMPL
 		 // Create (or reset) window
@@ -46,10 +44,7 @@ struct Room {
 
 
 #ifndef GAMEBASE_NO_DEFAULT_ROOM
-Room game = {
- // x  y  w    h    camera      background nobjects objects
-	0, 0, 640, 480, { 0, 0, 0, 0 }, 0x000000, 0, NULL
-};
+Room game;
 
 void game_play() {
 	game.start();

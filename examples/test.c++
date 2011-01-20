@@ -1,6 +1,6 @@
 
 #include "gamebase.c++"
-#include "objects/colored.c++"
+#include "objects/Colored.c++"
 
 
 
