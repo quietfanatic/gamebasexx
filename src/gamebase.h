@@ -61,14 +61,13 @@ enum geometry {
 	GEOM_MASK,     // unimpl
 };
 
-enum side {
-	NOSIDE = 0,
-	LEFT = 1,
-	TOP = 2,
-	RIGHT = 4,
-	BOTTOM = 8,
-	ALLSIDES = 15,
-};
+typedef int32 side;
+#define NOSIDE 0
+#define LEFT 1
+#define TOP 2
+#define RIGHT 4
+#define BOTTOM 8
+#define ALLSIDES 15
 
 
 /////// Settings

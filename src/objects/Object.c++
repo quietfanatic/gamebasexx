@@ -115,7 +115,32 @@ public:
 			}
 		}
 	}
-	side detect_side (Object* other);
+	side detect_side (Object* other) {
+		Object* self = this;
+		side s = NOSIDE;
+		if (other->geom() == GEOM_RECT) {
+			coord t = self->B() - other->T();
+			coord l = self->R() - other->L();
+			coord r = self->L() - other->R();
+			coord b = self->T() - other->B();
+			if (t <= l && t <= r) s |= TOP;
+			if (b <= l && b <= r) s |= BOTTOM;
+			if (l <= t && l <= b) s |= LEFT;
+			if (r <= t && r <= b) s |= RIGHT;
+			return s;
+		}
+		else if (other->geom() == GEOM_BOUNDARY) {
+			if (self->T() < other->B()) s |= BOTTOM;
+			if (self->L() < other->R()) s |= RIGHT;
+			if (self->B() > other->T()) s |= TOP;
+			if (self->R() > other->L()) s |= LEFT;
+			return s;
+		}
+		#ifdef GAMEBASE_CAREFUL
+		printf("Warning: detect_side called with unknown/unimplemented geometry.\n");
+		#endif
+		return NOSIDE;
+	}
 }; 
 
 
