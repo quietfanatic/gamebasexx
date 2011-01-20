@@ -3,6 +3,7 @@
 
 #include "objects/Colored.c++"
 #include "objects/Resizable.c++"
+#include "objects/Inverted.c++"
 
 //struct Camera {
 //	coord x;
@@ -11,7 +12,7 @@
 //	coord h;
 //};
 
-struct Room : public Colored< Resizable<Object> > {
+struct Room : public Colored< Inverted< Resizable<Object> > > {
 	Camera camera_start;
 	float fps;         // Framerate of game
 	uint ncontents;    // Number of starting objects
@@ -19,7 +20,6 @@ struct Room : public Colored< Resizable<Object> > {
 	
 	Room () : camera_start((Camera){0, 0, 0, 0}), fps(30), ncontents(0), contents(NULL)
 		{ color = 0x000000; w = 640; h = 480; }
-	virtual geometry geom () { return GEOM_BOUNDARY; }
 
 	void start () {
 		game_init();

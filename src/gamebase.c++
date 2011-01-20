@@ -3,8 +3,8 @@
 
 #include "gamebase.h"
 #include "objects/Object.c++"
-#include "graphics.c++"
 #include "room.c++"
+#include "graphics.c++"
 
 
 #ifdef GAMEBASE_CAREFUL

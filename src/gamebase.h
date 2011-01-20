@@ -35,7 +35,7 @@ typedef GAMEBASE_LONG_COORD_TYPE long_coord;
 class Object;
 typedef list<Object*>::iterator Object_i;
 struct Mouse { coord x; coord y; coord xvel; coord yvel; };
-class Room;
+struct Room;
 struct Camera { coord x; coord y; coord w; coord h; };
 
 #include "util.h"

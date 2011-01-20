@@ -114,6 +114,7 @@ public:
 				);
 			}
 		}
+		return false;
 	}
 	side detect_side (Object* other) {
 		Object* self = this;
@@ -141,10 +142,29 @@ public:
 		#endif
 		return NOSIDE;
 	}
+	side out_of_bounds ();
+	
+	side offscreen (void* _self) {
+		side s = 0;
+		if      (B() < camera.y)            s |= TOP;
+		else if (T() > camera.y + camera.h) s |= BOTTOM;
+		if      (R() < camera.x)            s |= LEFT;
+		else if (L() > camera.x + camera.w) s |= RIGHT;
+		return s;
+	}
 }; 
 
+ // Dumb cyclical dependency
+#include "room.c++"
 
-
+inline side Object::out_of_bounds () {
+	side s = 0;
+	if      (B() < 0)               s |= TOP;
+	else if (T() > current_room->h) s |= BOTTOM;
+	if      (R() < 0)               s |= LEFT;
+	else if (L() > current_room->w) s |= RIGHT;
+	return s;
+}
 
 
 
