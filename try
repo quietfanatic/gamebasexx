@@ -1,0 +1,9 @@
+#!/usr/bin/perl
+
+shift =~ /(.*)\.c\+\+$/ or die "Not a .c++ file\n";
+my $name = $1;
+$name =~ s/'/'\\\\''/g;
+
+!system("g++ -Isrc -Wall -ggdb /usr/lib/libSDL.so /usr/lib/libSDL_gfx.so /usr/lib/libSDL_image.so -o '$name' '$name.c++'")
+and exec("'./$name'");
+
