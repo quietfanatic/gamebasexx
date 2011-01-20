@@ -1,4 +1,5 @@
-
+#ifndef _HAVE_SURFACED_CPP
+#define _HAVE_SURFACED_CPP
 
 
 
@@ -21,4 +22,4 @@ class Surfaced : public O {
 
 
 
-
+#endif

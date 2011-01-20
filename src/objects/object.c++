@@ -1,5 +1,5 @@
-#ifndef HAVE_OBJECT_C
-#define HAVE_OBJECT_C
+#ifndef _HAVE_OBJECT_CPP
+#define _HAVE_OBJECT_CPP
 
 #include "gamebase.h"
 

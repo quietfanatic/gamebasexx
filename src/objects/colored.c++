@@ -1,5 +1,5 @@
-
-
+#ifndef _HAVE_COLORED_CPP
+#define _HAVE_COLORED_CPP
 
 
 
@@ -14,3 +14,6 @@ public:
 	}
 };
 
+
+
+#endif

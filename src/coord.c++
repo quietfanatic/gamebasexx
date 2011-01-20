@@ -1,3 +1,6 @@
+#ifndef _HAVE_COORD_CPP
+#define _HAVE_COORD_CPP
+
 #ifdef GAMEBASE_USE_FLOAT
 #define GAMEBASE_COORD_TYPE float
 #define GAMEBASE_LONG_COORD_TYPE double
@@ -46,4 +49,4 @@ public:
 #endif
 
 
-
+#endif

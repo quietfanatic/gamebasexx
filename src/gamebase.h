@@ -1,5 +1,5 @@
-#ifndef HAVE_GAMEBASE_H
-#define HAVE_GAMEBASE_H
+#ifndef _HAVE_GAMEBASE_H
+#define _HAVE_GAMEBASE_H
 
 #include <stddef.h>
 #include <stdint.h>

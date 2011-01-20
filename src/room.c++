@@ -1,3 +1,6 @@
+#ifndef _HAVE_ROOM_CPP
+#define _HAVE_ROOM_CPP
+
 
 //struct Camera {
 //	coord x;
@@ -68,4 +71,4 @@ void room_exit() {
 
 
 
-
+#endif
