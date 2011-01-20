@@ -1,7 +1,8 @@
 #ifndef _HAVE_MOVING_CPP
 #define _HAVE_MOVING_CPP
 
-
+#include <vector>
+#include <list>
 
 typedef uint32 collide_flags;
 #define COLL_ONLYON 1<<8
@@ -134,6 +135,52 @@ struct Moving : public O {
 	}
 	side contact (Object* other) { return collide(other, COLL_CONTACT|COLL_STOP); }
 	side bounce (Object* other) { return collide(other, COLL_BOUNCE|COLL_REFLECT); }
+
+	template <class OtherClass = Object>
+	list<OtherClass*> get_collisions (bool order_by_hit = false) {
+		list<OtherClass*> colls;
+		OtherClass* other;
+		FOR_ALL_OF_TYPE(other, OtherClass) {
+			if (!this->collision(other)) continue;
+			if (!order_by_hit) {
+				colls.push_back(other);
+			}
+			else {
+				 // Order by earliest hit, considering self's speed.
+				 // If xvel=1 and yvel=1 then the smallest x+y is first
+				 // If xvel=2 and yvel=1 then the smallest 2x+y is first
+				 // If xvel=-1 and yvel=1 then the smallest -x+y is first
+				 // If xvel=1 and yvel=-1 then the smallest x-y is first
+				 // If xvel=-1 and yvel=-1 then the smallest -x-y is first
+				 // Smallest xvel*x + yvel*y
+				long_coord xv = xvel;
+				long_coord yv = yvel;
+				Moving* m;
+				if (m = dynamic_cast<Moving*>(other)) {
+					xv -= m->xvel;
+					yv -= m->yvel;
+				}
+				uint i;
+				long_coord cmp = xv*other->x + yv*other->y;
+				 // Add to list, in order.
+				typeof(colls.begin()) cur;
+				if (cmp <= xv*(*colls.begin)->x + yv*(*colls.begin)->y) {
+					colls.push_front(other);
+				}
+				else {
+					for (cur = colls.begin(); cur != colls.end; cur++) {
+						if (cmp <= xv*(*cur)->x + yv*(*cur)->y) {
+							colls.insert(cur, other);
+							goto next;
+						}
+					}
+					colls.push_back(cur, other);
+				}
+			}
+			next: { }
+		}
+		return colls;
+	}
 };
 
 

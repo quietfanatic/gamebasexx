@@ -8,7 +8,7 @@
  // Contains the minimum required for an object.
  // This is mostly an interface.
 
-class Object {
+class Object : public gc {
 public:
 	coord x;
 	coord y;

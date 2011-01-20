@@ -10,9 +10,10 @@
 #include <SDL/SDL.h>
 #include <SDL/SDL_image.h>
 #include <SDL/SDL_framerate.h>
+#include <gc/gc_cpp.h>
+#include <gc/gc_allocator.h>
 #include <list>
 using namespace std;
-
 
 typedef unsigned int uint;
 typedef uint64_t uint64;
@@ -82,7 +83,6 @@ bool f11_toggles_fullscreen = true;  // Press f11 to change fullscreen mode
 list<Object*> objects;
 list<Object*> queued;
         Room* current_room = NULL;   // Whatever room is currently active
-      Object* game_boundary = NULL;  // Room boundary, automatically set on room start.
         uint8 keypress[400];
         Mouse mouse;                 // Position and button presses
        Camera camera;                // Camera for the current room

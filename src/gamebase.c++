@@ -194,6 +194,7 @@ void register_object(Object* o) {
 
 
 void garbage_collect() {
+	GC_gcollect();
 }
 
 

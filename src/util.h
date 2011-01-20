@@ -7,10 +7,10 @@
  // Routine
 
 #define FOR_ALL_OBJECTS(obj) \
-	for ((obj) = (typeof(obj))first_object; obj; obj = (typeof(obj))obj->next)
+	for (std::list<Object*>::iterator obj = objects.begin(); obj != objects.end(); obj++)
 
 #define FOR_ALL_OF_TYPE(obj, type) \
-	FOR_ALL_OBJECTS(obj) if (object_isa(obj, type))
+	FOR_ALL_OBJECTS(obj_) if (obj = dynamic_cast<type*>(obj_))
 
 #define FOR_COLLISIONS_BY_HIT(obj, type) \
 	object** _coll_list = get_collisions(self, type, ORDER_BY_HIT); \
