@@ -1,8 +1,7 @@
 
- // Method calls
+ // Method definition
 
- // required because C++ does not let outside virtuals inside a mixin.
-#define out this->
+#define VCM(n, v) const virtual n () { return v; }
 
  // Routine
 

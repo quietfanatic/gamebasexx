@@ -1,22 +1,18 @@
 #ifndef _HAVE_SURFACED_CPP
 #define _HAVE_SURFACED_CPP
 
-
-
+#include "objects/Surfaced.h"
 
 template <class O>
-struct Surfaced : public O {
-	SDL_Surface* surface;
-	virtual coord surface_x () { return - out l(); }
-	virtual coord surface_y () { return - out t(); }
+inline coord Surfaced<O>::surface_x () { return - this->l(); }
+template <class O>
+inline coord Surfaced<O>::surface_y () { return - this->t(); }
 
-	virtual void draw () {
+template <class O>
+inline void Surfaced<O>::draw () {
 		O::draw();
-		draw_surface(surface, out x + surface_x(), out y + surface_y());
-	}
-};
-
-
+		draw_surface(surface, this->x + surface_x(), this->y + surface_y());
+}
 
 
 

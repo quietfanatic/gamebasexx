@@ -21,8 +21,8 @@
 #else
 #define GAMEBASE_COORD_TYPE int16
 #define GAMEBASE_LONG_COORD_TYPE int32
-#endif
 #define P 1
+#endif
 #endif
 
 

@@ -1,19 +1,17 @@
 #ifndef _HAVE_COLORED_CPP
 #define _HAVE_COLORED_CPP
 
-
+#include "objects/Colored.h"
 
 
 template <class O>
-class Colored : public O {
-public:
-	uint32 color;
-	Colored () : color(0xffffff) { }
-	virtual void draw () {
-		O::draw();
-		draw_color(color, this);
-	}
-};
+Colored<O>::Colored () : color(0xffffff) { }
+template <class O>
+inline void Colored<O>::draw () {
+	O::draw();
+	draw_color(color, this);
+}
+
 
 
 

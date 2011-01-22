@@ -29,18 +29,13 @@ typedef uint16 geometry16;
 typedef uint8 side8;
 #define NO_COLOR 0xff000000
 
-#include "coord.c++"
+#include "coord.h"
 
 typedef GAMEBASE_COORD_TYPE coord;
 typedef GAMEBASE_LONG_COORD_TYPE long_coord;
-class Object;
-typedef list<Object*>::iterator Object_i;
 struct Mouse { coord x; coord y; coord xvel; coord yvel; };
-struct Room;
-struct Camera { coord x; coord y; coord w; coord h; };
 
 #include "util.h"
-
 
 
 /////// Enums
@@ -69,6 +64,12 @@ typedef int32 side;
 #define BOTTOM 8
 #define ALLSIDES 15
 
+
+/////// Required objects
+
+#include "objects/Object.h"
+#include "objects/Room.h"
+typedef list<Object*>::iterator Object_i;
 
 /////// Settings
 

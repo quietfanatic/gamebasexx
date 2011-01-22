@@ -3,7 +3,7 @@
 
 #include "gamebase.h"
 #include "objects/Object.c++"
-#include "room.c++"
+#include "objects/Room.c++"
 #include "graphics.c++"
 
 
