@@ -1,7 +1,7 @@
 
 
-
-struct Perspective<O> : public O {
+template <class O>
+struct Perspective : public O {
 	virtual float scroll_factor() { return 0.5; }
 	virtual void draw () {
 		uint oldx = this->x;
