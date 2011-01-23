@@ -40,6 +40,29 @@ SDL_Surface* load_image(const char* filename) {
 	return surf;
 }
 
+Surface** split_strip(SDL_Surface* strip, uint width, uint height) {
+	if (strip->format->BytesPerPixel != 4) {
+		printf("Error: Surface given to split_strip must be 32-bit.\n");
+		 exit(1);
+	}
+	uint nrows = strip->w / width;
+	uint ncols = strip->h / height;
+	uint nimages = nrows * ncols;
+	SDL_Surface** surflist = GC_malloc((nimages + 1) * sizeof(SDL_Surface*));
+	uint i, j;
+	for (i=0; i < ncols; i++) {
+		for (j=0; j < nrows; j++) {
+			uint offset = (i*height*strip->pitch) + (j*width*4);
+			surflist[i*nrows+j] = SDL_CreateRGBSurfaceFrom(
+				strip->pixels+offset,
+				width, height, 32, strip->pitch,
+				RMASK, GMASK, BMASK, AMASK
+			);
+		}
+	}
+	return surflist;
+}
+
 
 // Drawing
 
