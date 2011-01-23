@@ -30,8 +30,48 @@ void game_init() {
 void gamebase_main_loop() {
 	SDL_Event event;
 	for (;;) {
-		list<Object*>::iterator cur;
+		Object* cur;
+		Object* nextcur;
+
 		 // CREATION PHASE
+		for (cur = first_queued; cur; cur = nextcur) {
+			nextcur = cur->next;
+			 // remove from queue
+			if (cur->next) cur->next->prev = cur->prev;
+			 else              last_queued = cur->prev;
+			if (cur->prev) cur->prev->next = cur->next;
+			 else             first_queued = cur->next;
+			 // add to game
+			if (first_object == NULL) {
+				first_object = last_object = cur;
+				cur->next = cur->prev = NULL;
+			}
+			else {
+				for (Object* in = first_object; in; in = in->next) {
+					if (cur->order() <= in->order()) {
+						cur->next = in;
+						cur->prev = in->prev;
+						in->prev = cur;
+						if (cur->prev)  // Middle object
+							cur->prev->next = cur;
+						else {  // First object
+							first_object = cur;
+							cur->prev = NULL;
+						}
+						goto create;
+					}
+				}  // Last object
+				cur->prev = last_object;
+				cur->next = NULL;
+				cur->prev->next = cur;
+			}
+			create:
+			cur->flags |= OBJ_ACTIVE;
+			if (cur->flags*OBJ_NEW) {
+				cur->flags &=~ OBJ_NEW;
+				cur->create();
+			}
+		}
 
 		 // DRAWING PHASE
 		if (current_room->color != NO_COLOR) {
@@ -41,25 +81,26 @@ void gamebase_main_loop() {
 				current_room->color
 			);
 		}
-//#ifdef GAMEBASE_CAREFUL
-//		for (cur = last_object; cur; cur = cur->prev) {
-//			if (!careful_far_warn)
-//			if (cur->x < COORD_MIN + 20 P
-//			 || cur->y < COORD_MIN + 20 P
-//			 || cur->x > COORD_MAX - 20 P
-//			 || cur->y > COORD_MAX - 20 P) {
-//				careful_far_warn = 1;
-//				printf("Warning: An object is very far from the room and has not been deleted.\n");
-//			}
-//			if (cur->type->draw)
-//				(* cur->type->draw )(cur);
-//		}
-//#else
-		for (cur = objects.begin(); cur != objects.end(); cur++)
-			(*cur)->draw();
-//#endif
+#ifdef GAMEBASE_CAREFUL
+		for (cur = last_object; cur; cur = cur->prev) {
+			if (!careful_far_warn)
+			if (cur->x < COORD_MIN + 20*P
+			 || cur->y < COORD_MIN + 20*P
+			 || cur->x > COORD_MAX - 20*P
+			 || cur->y > COORD_MAX - 20*P) {
+				careful_far_warn = 1;
+				printf("Warning: An object is very far from the room and has not been deleted.\n");
+			}
+			cur->draw();
+		}
+#else
+		for (cur = last_object; cur; cur = cur->prev)
+			cur->draw();
+#endif
 		SDL_Flip(game_window);
 
+		 // GARBAGE COLLECTION
+		garbage_collect();
 		 // TIMING
 		SDL_framerateDelay(&fpsm);
 
@@ -110,42 +151,44 @@ void gamebase_main_loop() {
 		}
 #endif
 
-//#ifdef GAMEBASE_CAREFUL
-//		 // verification
-//		if (first_object->prev != NULL) goto corrupted;
-//		if (first_object->next == NULL) {
-//			if (first_object == last_object) goto fine; else goto corrupted;
-//		}
-//		for (cur = first_object->next; cur->next; cur = cur->next) {
-//			if (cur->prev->next != cur || cur->next->prev != cur) goto corrupted;
-//		}
-//		if (cur->prev->next != cur) goto corrupted;
-//		if (last_object != cur) goto corrupted;
-//		goto fine;
-//		corrupted: printf("Warning: object list corruption!\n");
-//		fine:
-//#endif
+#ifdef GAMEBASE_CAREFUL
+		 // verification
+		if (first_object->prev != NULL) goto corrupted;
+		if (first_object->next == NULL) {
+			if (first_object == last_object) goto fine; else goto corrupted;
+		}
+		for (cur = first_object->next; cur->next; cur = cur->next) {
+			if (cur->prev->next != cur || cur->next->prev != cur) goto corrupted;
+		}
+		if (cur->prev->next != cur) goto corrupted;
+		if (last_object != cur) goto corrupted;
+		goto fine;
+		corrupted: printf("Warning: object list corruption!\n");
+		fine:
+#endif
 
 		 // BEFORE_MOVE, MOVE, AFTER_MOVE PHASES
-		for (cur = objects.begin(); cur != objects.end(); cur++)
-			(*cur)->before_move();
+		for (cur = first_object; cur; cur = cur->next)
+			cur->before_move();
 
-		for (cur = objects.begin(); cur != objects.end(); cur++)
-			(*cur)->move();
+		for (cur = first_object; cur; cur = cur->next)
+			cur->move();
 
-		for (cur = objects.begin(); cur != objects.end(); cur++)
-			(*cur)->after_move();
+		for (cur = first_object; cur; cur = cur->next)
+			cur->after_move();
 
 
 		 // REMOVAL PHASE
-		for (cur = objects.begin(); cur != objects.end();) {
-			if ((*cur)->flags & OBJ_DOOMED)
-				objects.erase(cur++);
-			else cur++;
+		for (cur = first_object; cur; cur = nextcur) {
+			nextcur = cur->next;
+			if (cur->flags & OBJ_DOOMED) {
+				if (cur->prev) cur->prev->next = cur->next;
+				 else             first_object = cur->next;
+				if (cur->next) cur->next->prev = cur->prev;
+				 else              last_object = cur->prev;
+				cur->next = cur->prev = NULL;
+			}
 		}
-		
-		garbage_collect();
-
 	}
 }
 
@@ -170,22 +213,20 @@ void set_video() {
 // Objects
 
 void register_object(Object* o) {
-	if (objects.empty()) {
-		objects.push_front(o);
-		return;
+	if (o->next
+	 || o->prev
+	 || first_object == o
+	 || first_queued == o) {
+		return;  // No double-registering.
 	}
-	Object_i cur = objects.begin();
-	if (o->order() <= (*cur)->order()) {
-		objects.push_front(o);
-		return;
+	if (last_queued == NULL) {
+		first_queued = last_queued = o;
 	}
-	for (cur++; cur != objects.end(); cur++) {
-		if (o->order() <= (*cur)->order()) {
-			objects.insert(cur, o);
-			return;
-		}
+	else {  // push to back
+		last_queued->next = o;
+		o->prev = last_queued;
+		last_queued = o;
 	}
-	objects.push_back(o);
 }
 
 

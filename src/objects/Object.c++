@@ -4,6 +4,7 @@
 #include "objects/Object.h"
 
 
+inline Object::Object() : next(NULL), prev(NULL) { }
 
 inline float Object::order () {return 0*P;}
  // Events

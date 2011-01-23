@@ -6,8 +6,7 @@
  // Routine
 
 #define FOR_ALL_OBJECTS(obj) \
-	std::list<Object*>::iterator obj##_ = objects.begin(); \
-	for (Object* obj = *obj##_; obj##_ != objects.end(); obj = *(++obj##_))
+	for (Object* obj = first_object; obj; obj = obj->next)
 
 #define FOR_ALL_OF_TYPE(obj, type) \
 	type* obj; \

@@ -69,7 +69,6 @@ typedef int32 side;
 
 #include "objects/Object.h"
 #include "objects/Room.h"
-typedef list<Object*>::iterator Object_i;
 
 /////// Settings
 
@@ -80,12 +79,14 @@ bool f11_toggles_fullscreen = true;  // Press f11 to change fullscreen mode
 
 /////// Variables
 
-list<Object*> objects;
-list<Object*> queued;
-        Room* current_room = NULL;   // Whatever room is currently active
-        uint8 keypress[400];
-        Mouse mouse;                 // Position and button presses
-       Camera camera;                // Camera for the current room
+Object* first_object;  // Objects are a double-linked list.
+Object* last_object;
+Object* first_queued;
+Object* last_queued;
+  Room* current_room = NULL;   // Whatever room is currently active
+  uint8 keypress[400];
+  Mouse mouse;                 // Position and button presses
+ Camera camera;                // Camera for the current room
 
 
 /////// Internal

@@ -1,6 +1,6 @@
 #define GAMEBASE_USE_FP
-#define GAMEBASE_CAREFUL
 #define GAMEBASE_NO_DEFAULT_ROOM
+#define GAMEBASE_USE_HW
 
 #include "gamebase.c++"
 #include "Block.c++"

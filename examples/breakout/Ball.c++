@@ -30,10 +30,7 @@ struct Ball : Surfaced< Sprite > {
 				SET_MIN(xvel, -8*P);
 			}
 			 // destroy bricks
-			Brick* other;
-			std::list<Object*>::iterator obj_ = objects.begin();
-			for (Object* obj__ = *obj_; obj_ != objects.end(); obj__ = *(++obj_))
-			if (other = dynamic_cast<Brick*>(obj__)) {
+			FOR_ALL_OF_TYPE(other, Brick) {
 				if (bounce(other)) {
 					other->remove();
 					brick_count--;

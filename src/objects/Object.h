@@ -9,9 +9,12 @@
  // This is mostly an interface.
 
 struct Object : public gc {
+	Object* next;  // Doubly-linked list
+	Object* prev;  // Implementing raw is faster than using C++ STL list<>
 	coord x;
 	coord y;
 	object_flags flags;
+	Object();
 	 // Lower order => move first and draw first (behind others)
 	virtual float order ();
 	 // Events

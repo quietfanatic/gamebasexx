@@ -49,7 +49,15 @@ void Room::start () {
 
 	finish_exiting_room:
 	 // Destroy all objects.
-	objects.clear();
+	Object* cur;
+	Object* nextcur;
+	for (cur = last_object; cur; cur = nextcur) {
+		nextcur = cur->prev;
+		cur->next = NULL;
+		cur->prev = NULL;
+		if (cur->flags & OBJ_PERSISTENT)
+			register_object(cur);  // Put in queue for next room
+	}
 	garbage_collect();
 }
 
