@@ -111,8 +111,6 @@ void game_init();
 void gamebase_main_loop();
 void game_quit();
 void set_video();
-void set_free();
-void garbage_collect();
 
 void register_object(Object* o);
 

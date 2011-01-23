@@ -45,9 +45,11 @@ void Room::start () {
 	set_video();
 	if (setjmp(room_exit_jmp)) goto finish_exiting_room;
 	 // Start main loop
+	GC_gcollect();
+	GC_disable();
 	gamebase_main_loop();
-
 	finish_exiting_room:
+	GC_enable();
 	 // Destroy all objects.
 	Object* cur;
 	Object* nextcur;
@@ -58,7 +60,6 @@ void Room::start () {
 		if (cur->flags & OBJ_PERSISTENT)
 			register_object(cur);  // Put in queue for next room
 	}
-	garbage_collect();
 }
 
 

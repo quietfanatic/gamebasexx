@@ -100,7 +100,9 @@ void gamebase_main_loop() {
 		SDL_Flip(game_window);
 
 		 // GARBAGE COLLECTION
-		garbage_collect();
+		GC_enable();
+		GC_gcollect();
+		GC_disable();
 		 // TIMING
 		SDL_framerateDelay(&fpsm);
 
@@ -230,12 +232,6 @@ void register_object(Object* o) {
 }
 
 
-// Memory management
-
-
-void garbage_collect() {
-	GC_gcollect();
-}
 
 
 #endif
