@@ -54,7 +54,7 @@ SDL_Surface** split_strip(SDL_Surface* strip, uint width, uint height) {
 		for (j=0; j < nrows; j++) {
 			uint offset = (i*height*strip->pitch) + (j*width*4);
 			surflist[i*nrows+j] = SDL_CreateRGBSurfaceFrom(
-				(void*)(((uint*)strip->pixels)+offset),
+				(strip->pixels)+offset,
 				width, height, 32, strip->pitch,
 				RMASK, GMASK, BMASK, AMASK
 			);
