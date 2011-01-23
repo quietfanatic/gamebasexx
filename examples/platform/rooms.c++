@@ -18,9 +18,9 @@ struct room1 : public Room {
 		camera_start.y = 0;
 		camera_start.w = 640*P;
 		camera_start.h = 480*P;
-		color = 0xc0c0c0;
 	}
 
+	VM(uint32 color, 0xc0c0c0);
 	virtual void init () {
 		Block* b;
 		uint i;

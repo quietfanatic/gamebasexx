@@ -18,8 +18,9 @@ coord Char_ground_tolerance = 1*P;
 struct Character : public Colored< Sprite > {
 	VM(coord r, 32*P);
 	VM(coord b, 64*P);
+	VM(uint32 color, 0xc00000);
 	uint32 state;
-	Character () : state(STANDING) { color = 0xc00000; }
+	Character () : state(STANDING) { }
 
 	virtual void before_move () {
 		 // If standing, are we still standing?

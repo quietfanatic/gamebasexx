@@ -10,7 +10,6 @@
 
 
 int main() {
-	block_surface = load_image("block.png");
 	(new room1)->start();
 	return 0;
 }
