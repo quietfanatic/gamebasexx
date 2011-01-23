@@ -12,7 +12,6 @@
 #include <SDL/SDL_framerate.h>
 #include <gc/gc_cpp.h>
 #include <gc/gc_allocator.h>
-#include <list>
 using namespace std;
 
 typedef unsigned int uint;

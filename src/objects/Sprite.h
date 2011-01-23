@@ -1,8 +1,6 @@
 #ifndef _HAVE_SPRITE_H
 #define _HAVE_SPRITE_H
 
-#include <list>
-
 typedef uint32 collide_flags;
 #define COLL_ONLYON 1<<8
 #define COLL_CONTACT 1<<9
@@ -26,7 +24,7 @@ struct Sprite : public Object {
 	side bounce (Object* other);
 
 	template <class OtherClass = Object>
-	list<OtherClass*> get_collisions (bool order_by_hit = false);
+	OtherClass** get_collisions (bool order_by_hit = false);
 };
 
 

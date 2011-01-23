@@ -119,12 +119,17 @@ inline side Sprite::contact (Object* other) { return collide(other, COLL_CONTACT
 inline side Sprite::bounce (Object* other) { return collide(other, COLL_BOUNCE|COLL_REFLECT); }
 
 template <class OtherClass>
-inline list<OtherClass*> Sprite::get_collisions (bool order_by_hit) {
-	list<OtherClass*> colls;
+inline OtherClass** Sprite::get_collisions (bool order_by_hit) {
+	uint maxcolls = 8;
+	uint ncolls = 0;
+	OtherClass** colls = (OtherClass**) GC_malloc(sizeof(OtherClass*) * maxcolls);
 	FOR_ALL_OF_TYPE(other, OtherClass) {
 		if (!this->collision(other)) continue;
+		ncolls++;
+		if (ncolls == maxcolls)  // Expand collision list
+			colls = (OtherClass**) realloc(colls, sizeof(OtherClass*) * (maxcolls *= 2));
 		if (!order_by_hit) {
-			colls.push_back(other);
+			colls[ncolls-1] = other;	
 		}
 		else {
 			 // Order by earliest hit, considering self's speed.
@@ -142,21 +147,14 @@ inline list<OtherClass*> Sprite::get_collisions (bool order_by_hit) {
 			}
 			long_coord cmp = xv*other->x + yv*other->y;
 			 // Add to list, in order.
-			typeof(colls.begin()) cur;
-			if (cmp <= xv*(*colls.begin())->x + yv*(*colls.begin())->y) {
-				colls.push_front(other);
-			}
-			else {
-				for (cur = colls.begin(); cur != colls.end(); cur++) {
-					if (cmp <= xv*(*cur)->x + yv*(*cur)->y) {
-						colls.insert(cur, other);
-						goto next;
-					}
+			for (uint i = 0; i < ncolls; i++) {
+				if (colls[i] == NULL) { colls[i] = other; break; } // last
+				if (cmp < xv*colls[i]->x + yv*colls[i]->y) {
+					memmove(colls+i+1, colls+i, (ncolls-i-1)*sizeof(OtherClass*));
+					colls[i] = other; break;
 				}
-				colls.push_back(other);
 			}
 		}
-		next: { }
 	}
 	return colls;
 }

@@ -13,9 +13,9 @@
 	FOR_ALL_OBJECTS(obj##__) if (obj = dynamic_cast<type*>(obj##__))
 
 #define FOR_COLLISIONS_BY_HIT(obj, type) \
-	std::list<type*> _coll_list_##obj = get_collisions<type>(); \
-	std::list<type*>::iterator _coll_i_##obj = _coll_list_##obj.begin(); \
-	for (type* obj = *_coll_i_##obj; _coll_i_##obj != _coll_list_##obj.end(); (obj = *(++_coll_i_##obj)))
+	type** _coll_list_##obj = get_collisions<type>(); \
+	uint _coll_i_##obj = 0; \
+	for (type* obj = _coll_list_##obj[0]; obj ; (obj = _coll_list_##obj[++_coll_i_##obj]))
 
 
  // Math
