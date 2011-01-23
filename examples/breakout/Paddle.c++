@@ -1,7 +1,7 @@
-#include "objects/Moving.c++"
+#include "objects/Sprite.c++"
 #include "objects/Colored.c++"
 
-struct Paddle : Moving< Colored<Object> > {
+struct Paddle : Colored<Sprite> {
 	Paddle () { x = 140*P; y = 232*P; color = 0xffffff; }
 	virtual coord l () { return 20*P; }
 	virtual coord t () { return 2*P; }

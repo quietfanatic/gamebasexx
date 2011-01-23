@@ -1,11 +1,11 @@
 
 #include <objects/Surfaced.c++>
-#include <objects/Moving.c++>
+#include <objects/Sprite.c++>
 
 uint brick_count = 60;
 SDL_Surface* ball_surface = NULL;
 
-struct Ball : Surfaced< Moving<Object> > {
+struct Ball : Surfaced< Sprite > {
 	uint finish_timer;
 	uint alive;
 	virtual coord l () { return 3*P; }

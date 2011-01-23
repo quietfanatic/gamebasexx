@@ -48,7 +48,7 @@ void draw_color (uint32 color, coord l, coord t, coord r, coord b) {
 		(int16)((l - camera.x)/P),
 		(int16)((t - camera.y)/P),
 		(uint16)((r - l)/P),
-		(uint16)((b - t/P))
+		(uint16)((b - t)/P)
 	};
 	SDL_FillRect(
 		game_window,

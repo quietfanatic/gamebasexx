@@ -1,26 +1,22 @@
-#ifndef _HAVE_MOVING_CPP
-#define _HAVE_MOVING_CPP
+#ifndef _HAVE_SPRITE_CPP
+#define _HAVE_SPRITE_CPP
 
-#include "objects/Moving.h"
+#include "objects/Sprite.h"
 
-template <class O>
-Moving<O>::Moving () : xvel(0*P), yvel(0*P) { }
-template <class O>
-inline void Moving<O>::move () {
+Sprite::Sprite () : xvel(0*P), yvel(0*P) { }
+inline void Sprite::move () {
 	this->x += xvel;
 	this->y += yvel;
-	O::move();
 }
 
-template <class O>
-inline side Moving<O>::collision_direction (Object* other) {
+inline side Sprite::collision_direction (Object* other) {
 	if (other->geom() == GEOM_BOUNDARY) {
 		return this->detect_side(other);
 	}
 	side r = 0;
 	coord xv = xvel;
 	coord yv = yvel;
-	Moving* m = dynamic_cast<Moving*>(other);
+	Sprite* m = dynamic_cast<Sprite*>(other);
 	if (m != NULL) {
 		xv -= m->xvel;
 		yv -= m->yvel;
@@ -72,11 +68,10 @@ inline side Moving<O>::collision_direction (Object* other) {
 	return r;
 }
 
-template <class O>
-inline side Moving<O>::collide (Object* other, collide_flags flags) {
+inline side Sprite::collide (Object* other, collide_flags flags) {
 	if (this->collision(other)) {
 		coord oxv, oyv;
-		Moving* m = dynamic_cast<Moving*>(other);
+		Sprite* m = dynamic_cast<Sprite*>(other);
 		if (m != NULL) {
 			oxv = m->xvel;
 			oyv = m->yvel;
@@ -120,14 +115,11 @@ inline side Moving<O>::collide (Object* other, collide_flags flags) {
 	}
 	return 0;
 }
-template <class O>
-inline side Moving<O>::contact (Object* other) { return collide(other, COLL_CONTACT|COLL_STOP); }
-template <class O>
-inline side Moving<O>::bounce (Object* other) { return collide(other, COLL_BOUNCE|COLL_REFLECT); }
+inline side Sprite::contact (Object* other) { return collide(other, COLL_CONTACT|COLL_STOP); }
+inline side Sprite::bounce (Object* other) { return collide(other, COLL_BOUNCE|COLL_REFLECT); }
 
-template <class O>
 template <class OtherClass>
-inline list<OtherClass*> Moving<O>::get_collisions (bool order_by_hit) {
+inline list<OtherClass*> Sprite::get_collisions (bool order_by_hit) {
 	list<OtherClass*> colls;
 	FOR_ALL_OF_TYPE(other, OtherClass) {
 		if (!this->collision(other)) continue;
@@ -144,8 +136,7 @@ inline list<OtherClass*> Moving<O>::get_collisions (bool order_by_hit) {
 			 // Smallest xvel*x + yvel*y
 			long_coord xv = xvel;
 			long_coord yv = yvel;
-			Moving* m;
-			if (m = dynamic_cast<Moving*>(other)) {
+			if (Sprite* m = dynamic_cast<Sprite*>(other)) {
 				xv -= m->xvel;
 				yv -= m->yvel;
 			}

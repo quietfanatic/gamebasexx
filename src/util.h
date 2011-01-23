@@ -1,25 +1,22 @@
 
  // Method definition
 
-#define VCM(n, v) const virtual n () { return v; }
+#define VM(n, v) virtual n () { return v; }
 
  // Routine
 
 #define FOR_ALL_OBJECTS(obj) \
-	std::list<Object*>::iterator obj_ = objects.begin(); \
-	for (Object* obj = *obj_; obj_ != objects.end(); obj = *(++obj_))
+	std::list<Object*>::iterator obj##_ = objects.begin(); \
+	for (Object* obj = *obj##_; obj##_ != objects.end(); obj = *(++obj##_))
 
 #define FOR_ALL_OF_TYPE(obj, type) \
 	type* obj; \
-	FOR_ALL_OBJECTS(obj__) if (obj = dynamic_cast<type*>(obj__))
+	FOR_ALL_OBJECTS(obj##__) if (obj = dynamic_cast<type*>(obj##__))
 
 #define FOR_COLLISIONS_BY_HIT(obj, type) \
-	std::list<type*> _coll_list = get_collisions<type>(); \
-	std::list<type*>::iterator _coll_i = _coll_list.begin(); \
-	for (type* obj = *_coll_i; _coll_i != _coll_list.end(); (obj = *(++_coll_i)))
-
-#define PARENT_EVENT(parent, name) \
-	parent##_##name((void*) self)
+	std::list<type*> _coll_list_##obj = get_collisions<type>(); \
+	std::list<type*>::iterator _coll_i_##obj = _coll_list_##obj.begin(); \
+	for (type* obj = *_coll_i_##obj; _coll_i_##obj != _coll_list_##obj.end(); (obj = *(++_coll_i_##obj)))
 
 
  // Math

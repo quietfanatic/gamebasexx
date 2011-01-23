@@ -1,5 +1,5 @@
-#ifndef _HAVE_MOVING_H
-#define _HAVE_MOVING_H
+#ifndef _HAVE_SPRITE_H
+#define _HAVE_SPRITE_H
 
 #include <list>
 
@@ -15,11 +15,10 @@ typedef uint32 collide_flags;
 
 
 
-template <class O>
-struct Moving : public O {
+struct Sprite : public Object {
 	coord xvel;
 	coord yvel;
-	Moving ();
+	Sprite ();
 	virtual void move ();
 	side collision_direction (Object* other);
 	side collide (Object* other, collide_flags flags);
