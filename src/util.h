@@ -46,6 +46,14 @@
 		if ((var) < (min)) (var) = (min); \
 	}
 
+#define ADD_LIM(var, add, lim) \
+	if ((add) > 0) {\
+		ADD_MAX(var, add, lim); \
+	} \
+	else { \
+		SUB_MIN(var, -(add), lim); \
+	}
+
 #define RANDINT(lim) (rand()%(lim))
 #define RANDFLOAT(lim) ((float)rand()/RAND_MAX*(lim))
 
