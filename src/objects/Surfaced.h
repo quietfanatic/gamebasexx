@@ -6,7 +6,7 @@
 
 template <class O>
 struct Surfaced : public O {
-	SDL_Surface* surface;
+	virtual SDL_Surface* surface ();
 	virtual coord surface_x ();
 	virtual coord surface_y ();
 

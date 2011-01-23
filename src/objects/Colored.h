@@ -7,8 +7,7 @@
 template <class O>
 class Colored : public O {
 public:
-	uint32 color;
-	Colored ();
+	virtual uint32 color ();
 	virtual void draw ();
 };
 

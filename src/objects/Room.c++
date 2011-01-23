@@ -29,7 +29,11 @@ inline void Camera::center (Object* o, bool constrain) {
 
 
 inline void Room::init () { }  // Create starting objects;
-Room::Room () : fps(30) { color = 0x000000; w = 640; h = 480; }
+Room::Room () : fps(30) { w = 640; h = 480; }
+inline uint32 Room::color () { return 0x000000; }  // Black background
+inline void Room::draw () {
+	draw_color(color(), R(), B(), L(), T());
+}
 
 void Room::start () {
 	game_init();

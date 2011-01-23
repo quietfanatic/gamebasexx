@@ -12,7 +12,8 @@ struct Ball : Surfaced< Sprite > {
 	virtual coord t () { return 3*P; }
 	virtual coord r () { return 3*P; }
 	virtual coord b () { return 3*P; }
-	Ball () : finish_timer(0), alive(0) { surface = ball_surface; }
+	virtual SDL_Surface* surface () { return ball_surface; }
+	Ball () : finish_timer(0), alive(0) { }
 	virtual void after_move () {
 		if (finish_timer == 30) room_exit();
 		if (finish_timer) finish_timer++;

@@ -2,7 +2,7 @@
 #include "objects/Colored.c++"
 
 struct Paddle : Colored<Sprite> {
-	Paddle () { x = 140*P; y = 232*P; color = 0xffffff; }
+	Paddle () { x = 140*P; y = 232*P; }
 	virtual coord l () { return 20*P; }
 	virtual coord t () { return 2*P; }
 	virtual coord r () { return 20*P; }

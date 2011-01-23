@@ -74,13 +74,7 @@ void gamebase_main_loop() {
 		}
 
 		 // DRAWING PHASE
-		if (current_room->color != NO_COLOR) {
-			SDL_FillRect(
-				game_window,
-				NULL,
-				current_room->color
-			);
-		}
+		current_room->draw();
 #ifdef GAMEBASE_CAREFUL
 		for (cur = last_object; cur; cur = cur->prev) {
 			if (!careful_far_warn)

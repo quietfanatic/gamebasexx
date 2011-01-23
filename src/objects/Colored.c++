@@ -5,11 +5,11 @@
 
 
 template <class O>
-Colored<O>::Colored () : color(0xffffff) { }
+inline uint32 Colored<O>::color () { return 0xffffff; }
 template <class O>
 inline void Colored<O>::draw () {
 	O::draw();
-	draw_color(color, this);
+	draw_color(color(), this);
 }
 
 
