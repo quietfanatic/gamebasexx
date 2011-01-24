@@ -1,5 +1,4 @@
 
-#include "objects/Surfaced.c++"
 
 class Solid { };  // Things Character interacts with
 

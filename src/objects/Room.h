@@ -2,7 +2,6 @@
 #define _HAVE_ROOM_H
 
 #include "objects/Object.h"
-#include "objects/Colored.h"
 #include "objects/Resizable.h"
 #include "objects/Inverted.h"
 

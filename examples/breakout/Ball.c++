@@ -1,6 +1,5 @@
 
-#include <objects/Surfaced.c++>
-#include <objects/Sprite.c++>
+#include "objects/Sprite.c++"
 
 uint brick_count = 60;
 SDL_Surface* ball_surface = NULL;

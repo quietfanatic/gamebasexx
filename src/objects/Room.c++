@@ -2,7 +2,6 @@
 #define _HAVE_ROOM_CPP
 
 #include "objects/Room.h"
-#include "objects/Colored.c++"
 #include "objects/Resizable.c++"
 #include "objects/Inverted.c++"
 

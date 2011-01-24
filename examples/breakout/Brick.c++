@@ -1,7 +1,4 @@
 
-#include "objects/Surfaced.c++"
-#include "objects/Colored.c++"
-
 SDL_Surface* brick_surface = NULL;
 
 struct Brick : public Object {
