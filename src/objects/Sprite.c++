@@ -118,16 +118,20 @@ inline side Sprite::collide (Object* other, collide_flags flags) {
 inline side Sprite::contact (Object* other) { return collide(other, COLL_CONTACT|COLL_STOP); }
 inline side Sprite::bounce (Object* other) { return collide(other, COLL_BOUNCE|COLL_REFLECT); }
 
-template <class OtherClass>
-inline OtherClass** Sprite::get_collisions (bool order_by_hit) {
+template <class Type>
+inline Type** Sprite::get_collisions (bool order_by_hit) {
+	return (Type**) get_collisions_obj(ot<Type>, order_by_hit);
+}
+
+Object** Sprite::get_collisions_obj (object_type T, bool order_by_hit) {
 	uint maxcolls = 8;
 	uint ncolls = 0;
-	OtherClass** colls = (OtherClass**) GC_malloc(sizeof(OtherClass*) * maxcolls);
-	FOR_ALL_OF_TYPE(other, OtherClass) {
+	Object** colls = (Object**) GC_malloc(sizeof(Object*) * maxcolls);
+	FOR_ALL_OBJECTS(other) if (T(other)) {
 		if (!this->collision(other)) continue;
 		ncolls++;
 		if (ncolls == maxcolls)  // Expand collision list
-			colls = (OtherClass**) realloc(colls, sizeof(OtherClass*) * (maxcolls *= 2));
+			colls = (Object**) realloc(colls, sizeof(Object*) * (maxcolls *= 2));
 		if (!order_by_hit) {
 			colls[ncolls-1] = other;	
 		}
@@ -150,7 +154,7 @@ inline OtherClass** Sprite::get_collisions (bool order_by_hit) {
 			for (uint i = 0; i < ncolls; i++) {
 				if (colls[i] == NULL) { colls[i] = other; break; } // last
 				if (cmp < xv*colls[i]->x + yv*colls[i]->y) {
-					memmove(colls+i+1, colls+i, (ncolls-i-1)*sizeof(OtherClass*));
+					memmove(colls+i+1, colls+i, (ncolls-i-1)*sizeof(Object*));
 					colls[i] = other; break;
 				}
 			}

@@ -50,6 +50,10 @@ struct Object : public gc {
 
 
 
+ // First class Types!  Implemented by template func returning bool
+typedef bool (& object_type) (Object*);
+template <class T>
+inline bool ot (Object* x);
 
 
 

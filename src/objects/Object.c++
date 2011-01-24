@@ -166,6 +166,10 @@ inline bool Object::collision_rect (coord rl, coord rt, coord rr, coord rb) {
 
 
 
+// First-class type
+template <class T>
+inline bool ot (Object* x) { return (dynamic_cast<T*>(x) != NULL); }
+
 
 
 

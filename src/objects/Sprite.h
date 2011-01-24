@@ -22,9 +22,9 @@ struct Sprite : public Object {
 	side collide (Object* other, collide_flags flags);
 	side contact (Object* other);
 	side bounce (Object* other);
-
-	template <class OtherClass = Object>
-	OtherClass** get_collisions (bool order_by_hit = false);
+	template <class T = Object>
+	T** get_collisions (bool order_by_hit = true);
+	Object** get_collisions_obj(object_type T = ot<Object>, bool order_by_hit = true);
 };
 
 
