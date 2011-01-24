@@ -26,17 +26,14 @@ struct Character : public Colored< Sprite > {
 		 // If standing, are we still standing?
 		if (state == STANDING) {
 			state = FALLING;
-			FOR_ALL_OF_TYPE(block, Block) {
-				if (block->collision_rect(this->L(), this->B(), this->R(), this->B() + Char_ground_tolerance)) {
-					state = STANDING;
-					y = block->T() - b();
-				}
-			}
-			FOR_ALL_OF_TYPE(mover, Mover) {
-				if (mover->collision_rect(this->L(), this->B(), this->R(), this->B() + Char_ground_tolerance)) {
-					state = STANDING;
-					y = mover->T() - b();
-					yvel = mover->yvel;
+			FOR_ALL_OBJECTS(other) {
+				if (dynamic_cast<Solid*>(other)) {
+					if (other->collision_rect(this->L(), this->B(), this->R(), this->B() + Char_ground_tolerance)) {
+						state = STANDING;
+						y = other->T() - b();
+						if (Sprite* s = dynamic_cast<Sprite*>(other))
+							yvel = s->yvel;
+					}
 				}
 			}
 		}
@@ -75,13 +72,12 @@ struct Character : public Colored< Sprite > {
 	}
 	
 	virtual void after_move () {
-		FOR_COLLISIONS_BY_HIT(other, Block)
-			if (contact(other) == TOP)
-				state = STANDING;
-		camera.follow(this, 96*P);
-		FOR_COLLISIONS_BY_HIT(m, Mover)
-			if (contact(m) == TOP)
-				state = STANDING;
+		 // More efficient to check class first but
+		 // Solid is not guaranteed to be an Object....
+		FOR_COLLISIONS_BY_HIT(other, Object)
+			if (dynamic_cast<Solid*>(other))
+				if (contact(other) == TOP)
+					state = STANDING;
 		camera.follow(this, 96*P);
 	}
 
