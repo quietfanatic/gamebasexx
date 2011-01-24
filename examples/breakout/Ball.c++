@@ -5,7 +5,7 @@
 uint brick_count = 60;
 SDL_Surface* ball_surface = NULL;
 
-struct Ball : Surfaced< Sprite > {
+struct Ball : Sprite {
 	uint finish_timer;
 	uint alive;
 	virtual coord l () { return 3*P; }

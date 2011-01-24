@@ -4,7 +4,7 @@
 
 SDL_Surface* brick_surface = NULL;
 
-struct Brick : public Surfaced< Colored< Object > > {
+struct Brick : public Object {
 	virtual coord r () { return 32; }
 	virtual coord b () { return 12; }
 	virtual SDL_Surface* surface () { return brick_surface; }

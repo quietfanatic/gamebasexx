@@ -34,6 +34,11 @@ struct Object : public gc {
 	virtual coord b ();
 	coord B ();
 	virtual geometry geom ();
+	 // Drawing
+	virtual coord surface_x ();
+	virtual coord surface_y ();
+	virtual SDL_Surface* surface ();
+	virtual uint32 color ();
 
 	 // Add/remove
 	void insert ();

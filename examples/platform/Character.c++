@@ -15,7 +15,7 @@ coord Char_ground_tolerance = 1*P;
 
 
 
-struct Character : public Colored< Sprite > {
+struct Character : public Sprite {
 	VM(coord r, 32*P);
 	VM(coord b, 64*P);
 	VM(uint32 color, 0xc00000);

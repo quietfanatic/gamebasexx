@@ -12,7 +12,12 @@ inline void Object::create () {}
 inline void Object::before_move () {}
 inline void Object::move () {}
 inline void Object::after_move () {}
-inline void Object::draw () {}
+inline void Object::draw () {
+	if (color() != NO_COLOR)
+		draw_color(color(), this);
+	if (surface())
+		draw_surface(surface(), this->x + surface_x(), this->y + surface_y());
+}
 inline void Object::after_draw () {}
  // Shape
 inline coord Object::l () {return 0*P;}
@@ -24,6 +29,11 @@ inline coord Object::R () {return x+r();}
 inline coord Object::b () {return 0*P;}
 inline coord Object::B () {return y+b();}
 inline geometry Object::geom () {return GEOM_RECT;}
+ // Drawing
+inline coord Object::surface_x () {return -l();}
+inline coord Object::surface_y () {return -t();}
+inline SDL_Surface* Object::surface () {return NULL;}
+inline uint32 Object::color () {return NO_COLOR;}
 
  // Add/remove
 inline void Object::insert () {

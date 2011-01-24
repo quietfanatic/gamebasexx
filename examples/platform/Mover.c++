@@ -2,7 +2,7 @@
 #include "objects/Sprite.c++"
 
 
-struct Mover : Colored< Sprite >, Solid {
+struct Mover : Sprite, Solid {
 	VM(coord r, 64*P)
 	VM(coord b, 32*P)
 	VM(uint32 color, 0x000000)

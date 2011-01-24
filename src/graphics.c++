@@ -66,7 +66,7 @@ SDL_Surface** split_strip(SDL_Surface* strip, uint width, uint height) {
 
 // Drawing
 
-void draw_color (uint32 color, coord l, coord t, coord r, coord b) {
+inline void draw_color (uint32 color, coord l, coord t, coord r, coord b) {
 	SDL_Rect draw_rect = {
 		(int16)((l - camera.x)/P),
 		(int16)((t - camera.y)/P),
@@ -83,7 +83,7 @@ inline void draw_color (uint32 color, Object* o) {
 	draw_color(color, o->x - o->l(), o->y - o->t(), o->x + o->r(), o->y + o->b());
 }
 
-void draw_surface (SDL_Surface* surface, coord x, coord y) {
+inline void draw_surface (SDL_Surface* surface, coord x, coord y) {
 	SDL_Rect draw_rect = {(int16)((x - camera.x)/P), (int16)((y - camera.y)/P), 0, 0};
 	SDL_BlitSurface(
 		surface,

@@ -14,11 +14,11 @@ struct Camera : public Inverted< Resizable<Object> > {
 	void center (Object* o, bool constrain = true);
 };
 
-struct Room : public Colored< Inverted< Resizable<Object> > > {
+struct Room : public Inverted< Resizable<Object> > {
 	Camera camera_start;
 	float fps;         // Framerate of game
 	virtual void init ();  // Create starting objects
-	virtual uint32 color ();  // Override Colored<>'s color
+	virtual uint32 color ();  // Background color
 	virtual void draw ();  // And the draw() because of Inverted<> :|
 	Room ();
 	void start ();

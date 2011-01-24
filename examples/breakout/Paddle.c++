@@ -1,12 +1,12 @@
 #include "objects/Sprite.c++"
-#include "objects/Colored.c++"
 
-struct Paddle : Colored<Sprite> {
+struct Paddle : Sprite {
 	Paddle () { x = 140*P; y = 232*P; }
 	virtual coord l () { return 20*P; }
 	virtual coord t () { return 2*P; }
 	virtual coord r () { return 20*P; }
 	virtual coord b () { return 2*P; }
+	virtual uint32 color () { return 0xffffff; }
 
 	virtual void before_move () {
 		if (keypress[SDLK_RIGHT]) {

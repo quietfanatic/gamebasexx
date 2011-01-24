@@ -119,6 +119,7 @@ void register_object(Object* o);
  SDL_Surface* load_image   (char* filename);
 SDL_Surface** split_strip  (SDL_Surface* image, uint width, uint height);
          void draw_color   (uint32 c, coord l, coord t, coord r, coord b);
+         void draw_color   (uint32 c, Object* o);
          void draw_surface (SDL_Surface* surface, coord x, coord y);
 
 
