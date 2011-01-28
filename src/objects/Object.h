@@ -13,6 +13,8 @@ struct Object : public gc {
 	Object* prev;  // Implementing raw is faster than using C++ STL list<>
 	coord x;
 	coord y;
+	coord xvel;
+	coord yvel;
 	object_flags flags;
 	Object();
 	 // Lower order => move first and draw first (behind others)
@@ -26,14 +28,15 @@ struct Object : public gc {
 	virtual void after_draw ();
 	 // Shape
 	virtual coord l ();
-	coord L ();
 	virtual coord t ();
-	coord T ();
 	virtual coord r ();
-	coord R ();
 	virtual coord b ();
-	coord B ();
 	virtual geometry geom ();
+	 // Absolute sides
+	coord L ();  // x - l
+	coord T ();  // y - t
+	coord R ();  // x + r
+	coord B ();  // y + b
 	 // Drawing
 	virtual coord surface_x ();
 	virtual coord surface_y ();

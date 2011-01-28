@@ -3,24 +3,18 @@
 
 #include "objects/Sprite.h"
 
-Sprite::Sprite () : xvel(0*P), yvel(0*P) { }
 inline void Sprite::move () {
-	this->x += xvel;
-	this->y += yvel;
+	x += xvel;
+	y += yvel;
 }
 
 inline side Sprite::collision_direction (Object* other) {
 	if (other->geom() == GEOM_BOUNDARY) {
-		return this->detect_side(other);
+		return detect_side(other);
 	}
 	side r = 0;
-	coord xv = xvel;
-	coord yv = yvel;
-	Sprite* m = dynamic_cast<Sprite*>(other);
-	if (m != NULL) {
-		xv -= m->xvel;
-		yv -= m->yvel;
-	}
+	coord xv = xvel - other->xvel;
+	coord yv = yvel - other->yvel;
 	
 	if (xv == 0) {
 		return
@@ -40,27 +34,27 @@ inline side Sprite::collision_direction (Object* other) {
 	long_coord x_yv;
 	long_coord y_xv;
 	if (yv > 0) {  // Going down
-		y_xv = (this->B() - other->T()) *(long_coord) xv;
+		y_xv = (B() - other->T()) *(long_coord) xv;
 		if (xvel > 0) {  // Going right
-			x_yv = (this->R() - other->L()) *(long_coord) yv;
+			x_yv = (R() - other->L()) *(long_coord) yv;
 			if (x_yv >= y_xv) r |= TOP;
 			if (x_yv <= y_xv) r |= LEFT;
 		}
 		else {  // Going left
-			x_yv = (other->R() - this->L()) *(long_coord) yv;
+			x_yv = (other->R() - L()) *(long_coord) yv;
 			if (x_yv >= -y_xv) r |= TOP;
 			if (x_yv <= -y_xv) r |= RIGHT;
 		}
 	}
 	else {  // Going up
-		y_xv = (other->B() - this->T()) *(long_coord) xv;
+		y_xv = (other->B() - T()) *(long_coord) xv;
 		if (xvel > 0) {  // Going right
-			x_yv = (this->R() - other->L()) *(long_coord) yv;
+			x_yv = (R() - other->L()) *(long_coord) yv;
 			if (-x_yv >= y_xv) r |= BOTTOM;
 			if (-x_yv <= y_xv) r |= LEFT;
 		}
 		else {  // Going left
-			x_yv = (other->R() - this->L()) *(long_coord) yv;
+			x_yv = (other->R() - L()) *(long_coord) yv;
 			if (-x_yv >= -y_xv) r |= BOTTOM;
 			if (-x_yv <= -y_xv) r |= RIGHT;
 		}
@@ -68,55 +62,66 @@ inline side Sprite::collision_direction (Object* other) {
 	return r;
 }
 
-inline side Sprite::collide (Object* other, collide_flags flags) {
-	if (this->collision(other)) {
-		coord oxv, oyv;
-		Sprite* m = dynamic_cast<Sprite*>(other);
-		if (m != NULL) {
-			oxv = m->xvel;
-			oyv = m->yvel;
+side Sprite::contact (Object* other, side dir) {
+	if (collision(other)) {
+		dir &= collision_direction(other);
+		if (dir&TOP) {
+			y = other->T() - b();
+			SET_MAX(yvel, other->yvel);
 		}
-		else
-			oxv = oyv = 0;
-		if (!(flags&COLL_ONLYON)) flags |= ALLSIDES;
-		side dir = collision_direction(other);
-		dir &= (flags&ALLSIDES);
-		if (flags&COLL_CONTACT) {  // Contact
-			if      (dir&TOP)    this->y = other->T() - this->b();
-			else if (dir&BOTTOM) this->y = other->B() + this->t();
-			if      (dir&LEFT)   this->x = other->L() - this->r();
-			else if (dir&RIGHT)  this->x = other->R() + this->l();
+		else if (dir&BOTTOM) {
+			y = other->B() + t();
+			SET_MIN(yvel, other->yvel);
 		}
-		if (flags&COLL_STOP) {  // Stop (Useful with contact)
-			if      (dir&TOP)    { SET_MAX(yvel, oyv); }
-			else if (dir&BOTTOM) { SET_MIN(yvel, oyv); }
-			if      (dir&LEFT)   { SET_MAX(xvel, oxv); }
-			else if (dir&RIGHT)  { SET_MIN(xvel, oxv); }
+		if (dir&LEFT) {
+			x = other->L() - r();
+			SET_MAX(xvel, other->xvel);
 		}
-		if (flags&COLL_REFLECT) {  // Reverse speed
-			if      (dir&(TOP|BOTTOM)) yvel = -yvel;
-			else if (dir&(LEFT|RIGHT)) xvel = -xvel;
-		}
-		if (flags&COLL_BOUNCE) {  // Move away by distance that was overlapped
-			if      (dir&TOP)    this->y = 2*(other->T() - this->b()) - this->y;
-			else if (dir&BOTTOM) this->y = 2*(other->B() + this->t()) - this->y;
-			if      (dir&LEFT)   this->x = 2*(other->L() - this->r()) - this->x;
-			else if (dir&RIGHT)  this->x = 2*(other->R() + this->l()) - this->x;
-		}
-		if (flags&COLL_KINETIC) {  // Bounce two sprites away from eachother
-			if      (dir&(TOP|BOTTOM)) {
-				SWAP(yvel, oyv);
-			}
-			else if (dir&(LEFT|RIGHT)) {
-				SWAP(xvel, oxv);
-			}
+		else if (dir&RIGHT) {
+			x = other->R() + l();
+			SET_MIN(xvel, other->xvel);
 		}
 		return dir;
 	}
 	return 0;
 }
-inline side Sprite::contact (Object* other) { return collide(other, COLL_CONTACT|COLL_STOP); }
-inline side Sprite::bounce (Object* other) { return collide(other, COLL_BOUNCE|COLL_REFLECT); }
+
+side Sprite::bounce (Object* other, side dir) {
+	if (collision(other)) {
+		dir &= collision_direction(other);
+		if (dir&TOP) {
+			y = 2*(other->T() - b()) - y;
+			yvel = -yvel;
+		}
+		else if (dir&BOTTOM) {
+			y = 2*(other->B() + t()) - y;
+			yvel = -yvel;
+		}
+		if (dir&LEFT) {
+			x = 2*(other->L() - r()) - x;
+			xvel = -xvel;
+		}
+		else if (dir&RIGHT) {
+			x = 2*(other->R() + l()) - x;
+			xvel = -xvel;
+		}
+		return dir;
+	}
+	return 0;
+}
+
+side Sprite::kinetic_bounce (Sprite* other, side dir) {
+	if (collision(other)) {
+		if      (dir&(TOP|BOTTOM)) {
+			SWAP(yvel, other->yvel);
+		}
+		else if (dir&(LEFT|RIGHT)) {
+			SWAP(xvel, other->xvel);
+		}
+		return dir;
+	}
+	return 0;
+}
 
 template <class Type>
 inline Type** Sprite::get_collisions (bool order_by_hit) {
@@ -128,7 +133,7 @@ Object** Sprite::get_collisions_obj (object_type T, bool order_by_hit) {
 	uint ncolls = 0;
 	Object** colls = (Object**) GC_malloc(sizeof(Object*) * maxcolls);
 	FOR_ALL_OBJECTS(other) if (T(other)) {
-		if (!this->collision(other)) continue;
+		if (!collision(other)) continue;
 		ncolls++;
 		if (ncolls == maxcolls)  // Expand collision list
 			colls = (Object**) realloc(colls, sizeof(Object*) * (maxcolls *= 2));

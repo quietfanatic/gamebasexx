@@ -18,7 +18,7 @@ struct Ball : Sprite {
 		if (finish_timer) finish_timer++;
 		if (alive) {
 			 // bounce off walls
-			collide(&game, COLL_ONLYON|BOTTOM|LEFT|RIGHT|COLL_REFLECT|COLL_BOUNCE);
+			bounce(&game, LEFT|RIGHT|BOTTOM);
 			 // restart at bottom
 			if (out_of_bounds()) {
 				alive = 0;
