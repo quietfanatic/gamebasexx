@@ -1,5 +1,4 @@
 
-#include "objects/Sprite.c++"
 
 
 
@@ -15,7 +14,7 @@ coord Char_ground_tolerance = 1*P;
 
 
 
-struct Character : public Sprite {
+struct Character : public Object {
 	VM(coord r, 32*P);
 	VM(coord b, 64*P);
 	VM(uint32 color, 0xc00000);
@@ -31,8 +30,7 @@ struct Character : public Sprite {
 					if (other->collision_rect(this->L(), this->B(), this->R(), this->B() + Char_ground_tolerance)) {
 						state = STANDING;
 						y = other->T() - b();
-						if (Sprite* s = dynamic_cast<Sprite*>(other))
-							yvel = s->yvel;
+						yvel = other->yvel;
 					}
 				}
 			}

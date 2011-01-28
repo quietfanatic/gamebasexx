@@ -1,10 +1,9 @@
 
-#include "objects/Sprite.c++"
 
 uint brick_count = 60;
 SDL_Surface* ball_surface = NULL;
 
-struct Ball : Sprite {
+struct Ball : public Object {
 	uint finish_timer;
 	uint alive;
 	virtual coord l () { return 3*P; }
@@ -20,7 +19,7 @@ struct Ball : Sprite {
 			 // bounce off walls
 			bounce(&game, LEFT|RIGHT|BOTTOM);
 			 // restart at bottom
-			if (out_of_bounds()) {
+			if (out_of_room()) {
 				alive = 0;
 			}
 			 // bounce off paddle

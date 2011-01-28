@@ -1,6 +1,5 @@
-#include "objects/Sprite.c++"
 
-struct Paddle : Sprite {
+struct Paddle : public Object {
 	Paddle () { x = 140*P; y = 232*P; }
 	virtual coord l () { return 20*P; }
 	virtual coord t () { return 2*P; }

@@ -7,10 +7,14 @@
 inline Object::Object() : next(NULL), prev(NULL) { }
 
 inline float Object::order () {return 0*P;}
+
  // Events
 inline void Object::create () {}
 inline void Object::before_move () {}
-inline void Object::move () {}
+inline void Object::move () {
+	x += xvel;
+	y += yvel;
+}
 inline void Object::after_move () {}
 inline void Object::draw () {
 	if (color() != NO_COLOR)
@@ -19,16 +23,19 @@ inline void Object::draw () {
 		draw_surface(surface(), this->x + surface_x(), this->y + surface_y());
 }
 inline void Object::after_draw () {}
+
  // Shape
 inline coord Object::l () {return 0*P;}
-inline coord Object::L () {return x-l();}
 inline coord Object::t () {return 0*P;}
-inline coord Object::T () {return y-t();}
 inline coord Object::r () {return 0*P;}
-inline coord Object::R () {return x+r();}
 inline coord Object::b () {return 0*P;}
-inline coord Object::B () {return y+b();}
 inline geometry Object::geom () {return GEOM_RECT;}
+
+inline coord Object::L () {return x-l();}
+inline coord Object::T () {return y-t();}
+inline coord Object::R () {return x+r();}
+inline coord Object::B () {return y+b();}
+
  // Drawing
 inline coord Object::surface_x () {return -l();}
 inline coord Object::surface_y () {return -t();}
@@ -44,7 +51,7 @@ inline void Object::remove () {
 	flags |= OBJ_DOOMED;
 }
 
-	 // Collisions
+ // Collision detection
 bool Object::collision (Object* other) {
 	Object* self = this;
 	if (self == other) return 0;
@@ -119,6 +126,15 @@ bool Object::collision (Object* other) {
 	return false;
 }
 
+inline bool Object::collision_rect (coord rl, coord rt, coord rr, coord rb) {
+	Resizable<Object> r;
+	r.x = rl;
+	r.y = rt;
+	r.w = rr-rl;
+	r.h = rb-rt;
+	return collision(&r);
+}
+
 side Object::detect_side (Object* other) {
 	Object* self = this;
 	side s = NOSIDE;
@@ -146,6 +162,170 @@ side Object::detect_side (Object* other) {
 	return NOSIDE;
 }
 
+inline side Object::collision_side (Object* other) {
+	if (other->geom() == GEOM_BOUNDARY) {
+		return detect_side(other);
+	}
+	side r = 0;
+	coord xv = xvel - other->xvel;
+	coord yv = yvel - other->yvel;
+	
+	if (xv == 0) {
+		return
+		  yv > 0 ? TOP 
+		: yv < 0 ? BOTTOM
+		: NOSIDE;
+	}
+	if (yv == 0) {
+		return
+		  xv > 0 ? LEFT
+		: xv < 0 ? RIGHT
+		: NOSIDE;
+	}
+	 // We compare the ratio of xvel to yvel with x diff to y diff
+	 // if xv/yv >= x/y then xv*y >= x*yv
+	 // Comparisons are tricky because xv and yv can be negative.
+	long_coord x_yv;
+	long_coord y_xv;
+	if (yv > 0) {  // Going down
+		y_xv = (B() - other->T()) *(long_coord) xv;
+		if (xvel > 0) {  // Going right
+			x_yv = (R() - other->L()) *(long_coord) yv;
+			if (x_yv >= y_xv) r |= TOP;
+			if (x_yv <= y_xv) r |= LEFT;
+		}
+		else {  // Going left
+			x_yv = (other->R() - L()) *(long_coord) yv;
+			if (x_yv >= -y_xv) r |= TOP;
+			if (x_yv <= -y_xv) r |= RIGHT;
+		}
+	}
+	else {  // Going up
+		y_xv = (other->B() - T()) *(long_coord) xv;
+		if (xvel > 0) {  // Going right
+			x_yv = (R() - other->L()) *(long_coord) yv;
+			if (-x_yv >= y_xv) r |= BOTTOM;
+			if (-x_yv <= y_xv) r |= LEFT;
+		}
+		else {  // Going left
+			x_yv = (other->R() - L()) *(long_coord) yv;
+			if (-x_yv >= -y_xv) r |= BOTTOM;
+			if (-x_yv <= -y_xv) r |= RIGHT;
+		}
+	}
+	return r;
+}
+
+template <class Type>
+inline Type** Object::get_collisions (bool order_by_hit) {
+	return (Type**) get_collisions_obj(ot<Type>, order_by_hit);
+}
+
+Object** Object::get_collisions_obj (object_type T, bool order_by_hit) {
+	uint maxcolls = 8;
+	uint ncolls = 0;
+	Object** colls = (Object**) GC_malloc(sizeof(Object*) * maxcolls);
+	FOR_ALL_OBJECTS(other) if (T(other)) {
+		if (!collision(other)) continue;
+		ncolls++;
+		if (ncolls == maxcolls)  // Expand collision list
+			colls = (Object**) realloc(colls, sizeof(Object*) * (maxcolls *= 2));
+		if (!order_by_hit) {
+			colls[ncolls-1] = other;	
+		}
+		else {
+			 // Order by earliest hit, considering self's speed.
+			 // If xvel=1 and yvel=1 then the smallest x+y is first
+			 // If xvel=2 and yvel=1 then the smallest 2x+y is first
+			 // If xvel=-1 and yvel=1 then the smallest -x+y is first
+			 // If xvel=1 and yvel=-1 then the smallest x-y is first
+			 // If xvel=-1 and yvel=-1 then the smallest -x-y is first
+			 // Smallest xvel*x + yvel*y
+			long_coord xv = xvel;
+			long_coord yv = yvel;
+			if (Object* m = dynamic_cast<Object*>(other)) {
+				xv -= m->xvel;
+				yv -= m->yvel;
+			}
+			long_coord cmp = xv*other->x + yv*other->y;
+			 // Add to list, in order.
+			for (uint i = 0; i < ncolls; i++) {
+				if (colls[i] == NULL) { colls[i] = other; break; } // last
+				if (cmp < xv*colls[i]->x + yv*colls[i]->y) {
+					memmove(colls+i+1, colls+i, (ncolls-i-1)*sizeof(Object*));
+					colls[i] = other; break;
+				}
+			}
+		}
+	}
+	return colls;
+}
+
+ // Collision reactions
+side Object::contact (Object* other, side dir) {
+	if (collision(other)) {
+		dir &= collision_side(other);
+		if (dir&TOP) {
+			y = other->T() - b();
+			SET_MAX(yvel, other->yvel);
+		}
+		else if (dir&BOTTOM) {
+			y = other->B() + t();
+			SET_MIN(yvel, other->yvel);
+		}
+		if (dir&LEFT) {
+			x = other->L() - r();
+			SET_MAX(xvel, other->xvel);
+		}
+		else if (dir&RIGHT) {
+			x = other->R() + l();
+			SET_MIN(xvel, other->xvel);
+		}
+		return dir;
+	}
+	return 0;
+}
+
+side Object::bounce (Object* other, side dir) {
+	if (collision(other)) {
+		dir &= collision_side(other);
+		if (dir&TOP) {
+			y = 2*(other->T() - b()) - y;
+			yvel = -yvel;
+		}
+		else if (dir&BOTTOM) {
+			y = 2*(other->B() + t()) - y;
+			yvel = -yvel;
+		}
+		if (dir&LEFT) {
+			x = 2*(other->L() - r()) - x;
+			xvel = -xvel;
+		}
+		else if (dir&RIGHT) {
+			x = 2*(other->R() + l()) - x;
+			xvel = -xvel;
+		}
+		return dir;
+	}
+	return 0;
+}
+
+side Object::kinetic_bounce (Object* other, side dir) {
+	if (collision(other)) {
+		if      (dir&(TOP|BOTTOM)) {
+			SWAP(yvel, other->yvel);
+		}
+		else if (dir&(LEFT|RIGHT)) {
+			SWAP(xvel, other->xvel);
+		}
+		return dir;
+	}
+	return 0;
+}
+
+
+
+ // Misc state
 side Object::offscreen () {
 	side s = 0;
 	if      (B() < camera.y)            s |= TOP;
@@ -155,7 +335,7 @@ side Object::offscreen () {
 	return s;
 }
 
-side Object::out_of_bounds () {
+side Object::out_of_room () {
 	side s = 0;
 	if      (B() < 0)               s |= TOP;
 	else if (T() > current_room->h) s |= BOTTOM;
@@ -163,17 +343,6 @@ side Object::out_of_bounds () {
 	else if (L() > current_room->w) s |= RIGHT;
 	return s;
 }
-
-inline bool Object::collision_rect (coord rl, coord rt, coord rr, coord rb) {
-	Resizable<Object> r;
-	r.x = rl;
-	r.y = rt;
-	r.w = rr-rl;
-	r.h = rb-rt;
-	return collision(&r);
-}
-
-
 
 
 // First-class type
