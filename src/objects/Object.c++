@@ -348,7 +348,7 @@ side Object::kinetic_bounce (Object* other, double elasticity, side dir) {
 				tv += xvel;
 			if (other->mass() == INF)
 				tv += other->xvel;
-			if (!tv) {
+			if (tv != 0.0) {
 				tv = (xvel * mass() + other->xvel * other->mass())
 				   / (mass() + other->mass());
 			}
