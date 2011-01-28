@@ -20,6 +20,8 @@
 
  // Math
 
+#define INF (1.0/0.0)
+
 #define SWAP(a, b) \
 	if(1) { \
 		typeof(a) _tmp; \

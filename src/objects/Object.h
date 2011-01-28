@@ -43,6 +43,8 @@ struct Object : public gc {
 	coord T ();  // y - t
 	coord R ();  // x + r
 	coord B ();  // y + b
+	 // Physics
+	virtual double mass ();
 
 	 // Drawing
 	virtual coord surface_x ();
@@ -59,13 +61,14 @@ struct Object : public gc {
 	bool collision_rect (coord rl, coord rt, coord rr, coord rb);
 	side detect_side (Object* other);
 	side collision_side (Object* other);
+	double collision_time (Object* other, side dir = NOSIDE);
 	template <class T = Object>
 		T** get_collisions (bool order_by_hit = true);
 	Object** get_collisions_obj(object_type T = ot<Object>, bool order_by_hit = true);
 	 // Collision reactions
 	side contact (Object* other, side dir = ALLSIDES);
 	side bounce (Object* other, side dir = ALLSIDES);
-	side kinetic_bounce (Object* other, side dir = ALLSIDES);
+	side kinetic_bounce (Object* other, double elasticity = 1.0, side dir = ALLSIDES);
 
 	 // Misc state
 	side out_of_room ();

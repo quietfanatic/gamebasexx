@@ -35,6 +35,8 @@ inline coord Object::L () {return x-l();}
 inline coord Object::T () {return y-t();}
 inline coord Object::R () {return x+r();}
 inline coord Object::B () {return y+b();}
+ // Physics
+inline double Object::mass () {return 1.0;}
 
  // Drawing
 inline coord Object::surface_x () {return -l();}
@@ -162,7 +164,7 @@ side Object::detect_side (Object* other) {
 	return NOSIDE;
 }
 
-inline side Object::collision_side (Object* other) {
+side Object::collision_side (Object* other) {
 	if (other->geom() == GEOM_BOUNDARY) {
 		return detect_side(other);
 	}
@@ -185,6 +187,7 @@ inline side Object::collision_side (Object* other) {
 	 // We compare the ratio of xvel to yvel with x diff to y diff
 	 // if xv/yv >= x/y then xv*y >= x*yv
 	 // Comparisons are tricky because xv and yv can be negative.
+	 // Basically we're overoptimizing by avoiding division :)
 	long_coord x_yv;
 	long_coord y_xv;
 	if (yv > 0) {  // Going down
@@ -214,6 +217,19 @@ inline side Object::collision_side (Object* other) {
 		}
 	}
 	return r;
+}
+
+double Object::collision_time (Object* other, side dir) {
+	if (!dir) dir = collision_side(other);
+	if (dir&LEFT)
+		return (R() - other->L()) /(double) (xvel + other->xvel);
+	if (dir&TOP)
+		return (B() - other->T()) /(double) (yvel + other->yvel);
+	if (dir&RIGHT)
+		return (L() - other->R()) /(double) (xvel + other->xvel);
+	if (dir&BOTTOM)
+		return (T() - other->B()) /(double) (yvel + other->yvel);
+	return INF;  // Objects'll never hit.
 }
 
 template <class Type>
@@ -310,13 +326,30 @@ side Object::bounce (Object* other, side dir) {
 	return 0;
 }
 
-side Object::kinetic_bounce (Object* other, side dir) {
+side Object::kinetic_bounce (Object* other, double elasticity, side dir) {
 	if (collision(other)) {
-		if      (dir&(TOP|BOTTOM)) {
-			SWAP(yvel, other->yvel);
+		dir &= collision_side(other);
+		if (dir&(TOP|BOTTOM)) {
+			double sm = ((double)yvel/P) * mass();
+			double om = ((double)other->yvel/P) * other->mass();
+			double tm = sm + om;
+			double tv = tm / (mass() + other->mass());
+			yvel = (tv - (yvel/P - tv)*elasticity)*P;
+			other->yvel = (tv - (other->yvel/P - tv)*elasticity)*P;
+			double time = collision_time(other, dir);
+			y += yvel * (1-time);
+			other->y += other->yvel * (1-time);
 		}
-		else if (dir&(LEFT|RIGHT)) {
-			SWAP(xvel, other->xvel);
+		if (dir&(LEFT|RIGHT)) {
+			double sm = ((double)xvel/P) * mass();
+			double om = ((double)other->xvel/P) * other->mass();
+			double tm = sm + om;
+			double tv = tm / (mass() + other->mass());
+			xvel = (tv - (xvel/P - tv)*elasticity)*P;
+			other->xvel = (tv - (other->xvel/P - tv)*elasticity)*P;
+			double time = collision_time(other, dir);
+			x += xvel * (1-time);
+			other->x += other->xvel * (1-time);
 		}
 		return dir;
 	}
