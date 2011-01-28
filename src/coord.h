@@ -24,7 +24,7 @@ struct coord {
 	template <class T>
 	operator T () {
 		 // Differentiate between floatly and intly
-		 // Ought to be optimized away
+		 // Decision ought to be optimized away
 		if ((T)0.5 == (T)0)
 			return repr / COORD_FRAC;
 		else
@@ -43,14 +43,23 @@ inline double operator / (coord x, coord y) { return (double)x / (double)y; }
 inline coord& operator += (coord& x, coord y) { x.repr += y.repr; return x; }
 inline coord& operator -= (coord& x, coord y) { x.repr -= y.repr; return x; }
 inline coord& operator %= (coord& x, coord y) { x.repr %= y.repr; return x; }
+inline coord& operator *= (coord& x, coord y) { x.repr = (x.repr *(int64_t)y.repr)/COORD_FRAC; return x; }
+inline coord& operator /= (coord& x, coord y) { x.repr /= (double)y; return x; }
 template <class T> inline coord operator + (coord x, T y) { return x + (coord)y; }
 template <class T> inline coord operator - (coord x, T y) { return x - (coord)y; }
 template <class T> inline coord operator % (coord x, T y) { return x % (coord)y; }
+template <class T> inline T operator * (coord x, T y) { return (T)x * y; }
+template <class T> inline T operator / (coord x, T y) { return (T)x / y; }
 template <class T> inline coord& operator += (coord& x, T y) { return x += (coord)y; }
 template <class T> inline coord& operator -= (coord& x, T y) { return x -= (coord)y; }
 template <class T> inline coord& operator %= (coord& x, T y) { return x %= (coord)y; }
-template <class T> inline T operator * (coord x, T y) { return (T)x * y; }
-template <class T> inline T operator / (coord x, T y) { return (T)x / y; }
+template <class T> inline coord& operator *= (coord& x, T y) { x.repr *= y; return x; }
+template <class T> inline coord& operator /= (coord& x, T y) { x.repr /= y; return x; }
+template <class T> inline T& operator += (T& x, coord y) { return x += (T)y; }
+template <class T> inline T& operator -= (T& x, coord y) { return x -= (T)y; }
+template <class T> inline T& operator %= (T& x, coord y) { return x %= (T)y; }
+template <class T> inline T& operator *= (T& x, coord y) { return x *= (T)y; }
+template <class T> inline T& operator /= (T& x, coord y) { return x /= (T)y; }
  // Comparison  (Note that comparisons to other types use coord's accuracy)
 inline bool operator == (coord x, coord y) { return x.repr == y.repr; }
 inline bool operator != (coord x, coord y) { return x.repr != y.repr; }

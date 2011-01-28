@@ -221,13 +221,13 @@ side Object::collision_side (Object* other) {
 double Object::collision_time (Object* other, side dir) {
 	if (!dir) dir = collision_side(other);
 	if (dir&LEFT)
-		return (R() - other->L()) /(double) (xvel + other->xvel);
+		return 1-((R() - other->L()) / (xvel + other->xvel));
 	if (dir&TOP)
-		return (B() - other->T()) /(double) (yvel + other->yvel);
+		return 1-((B() - other->T()) / (yvel + other->yvel));
 	if (dir&RIGHT)
-		return (L() - other->R()) /(double) (xvel + other->xvel);
+		return 1-((L() - other->R()) / (xvel + other->xvel));
 	if (dir&BOTTOM)
-		return (T() - other->B()) /(double) (yvel + other->yvel);
+		return 1-((T() - other->B()) / (yvel + other->yvel));
 	return INF;  // Objects'll never hit.
 }
 
@@ -325,26 +325,40 @@ side Object::kinetic_bounce (Object* other, double elasticity, side dir) {
 	if (collision(other)) {
 		dir &= collision_side(other);
 		if (dir&(TOP|BOTTOM)) {
-			double sm = yvel * mass();
-			double om = other->yvel * other->mass();
-			double tm = sm + om;
-			double tv = tm / (mass() + other->mass());
-			yvel = tv - (yvel - tv)*elasticity;
+			double tv = 0;
+			if (mass() == INF)
+				tv += yvel;  // General formula doesn't quite work with infinite masses
+			if (other->mass() == INF)
+				tv += other->yvel;
+			if (tv != 0.0) {  // Total velocity of system
+				tv = (yvel * mass() + other->yvel * other->mass())
+				   / (mass() + other->mass());
+			}
+			coord oldyv = yvel;
+			coord oldoyv = other->yvel;
 			other->yvel = tv - (other->yvel - tv)*elasticity;
 			double time = collision_time(other, dir);
-			y += yvel * (1-time);
-			other->y += other->yvel * (1-time);
+			yvel = tv - (yvel - tv)*elasticity;
+			y += (yvel - oldyv) * (1-time);
+			other->y += (other->yvel - oldoyv) * (1-time);
 		}
 		if (dir&(LEFT|RIGHT)) {
-			double sm = xvel * mass();
-			double om = other->xvel * other->mass();
-			double tm = sm + om;
-			double tv = tm / (mass() + other->mass());
+			double tv = 0;
+			if (mass() == INF)
+				tv += xvel;
+			if (other->mass() == INF)
+				tv += other->xvel;
+			if (!tv) {
+				tv = (xvel * mass() + other->xvel * other->mass())
+				   / (mass() + other->mass());
+			}
+			coord oldxv = xvel;
+			coord oldoxv = other->xvel;
+			double time = collision_time(other, dir);
 			xvel = tv - (xvel - tv)*elasticity;
 			other->xvel = tv - (other->xvel - tv)*elasticity;
-			double time = collision_time(other, dir);
-			x += xvel * (1-time);
-			other->x += other->xvel * (1-time);
+			x += (xvel - oldxv) * (1-time);
+			other->x += (other->xvel - oldoxv) * (1-time);
 		}
 		return dir;
 	}
