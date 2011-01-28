@@ -9,16 +9,16 @@ enum CHAR_STATE {
 };
 
 
-coord Char_ground_tolerance = 1*P;
+coord Char_ground_tolerance = 1;
 
 
 
 
 struct Character : public Object {
-	VM(coord r, 32*P);
-	VM(coord b, 64*P);
+	VM(coord r, 32);
+	VM(coord b, 64);
 	VM(uint32 color, 0xc00000);
-	uint32 state;
+	CHAR_STATE state;
 	Character () : state(STANDING) { }
 
 	virtual void before_move () {
@@ -36,32 +36,32 @@ struct Character : public Object {
 			}
 		}
 		 // move left/right
-		coord accel_max = state == STANDING ? 4*P : 2*P;
+		coord accel_max = state == STANDING ? 4 : 2;
 		if (keypress[SDLK_LEFT]) {  // Move left
 			if (keypress[SDLK_RIGHT]) goto no_direction_pressed;
-			SUB_MIN(xvel, 0.2*P, -accel_max);
+			SUB_MIN(xvel, 0.2, -accel_max);
 		}
 		else if (keypress[SDLK_RIGHT]) {  // Move right
-			ADD_MAX(xvel, 0.2*P, accel_max);
+			ADD_MAX(xvel, 0.2, accel_max);
 		}
 		else {
 			no_direction_pressed:
 			if (state == STANDING) {  // Slow down, if standing
-				ADD_MAX(xvel, 0.2*P, 0*P);
-				SUB_MIN(xvel, 0.2*P, 0*P);
+				ADD_MAX(xvel, 0.2, 0);
+				SUB_MIN(xvel, 0.2, 0);
 			}
 		}
 	
 		if (state == STANDING) {
 			if (keypress[SDLK_UP]) {  // Jump
 				state = FALLING;
-				yvel -= 7*P;
+				yvel -= 7;
 			}
 		}
 		else if (state == FALLING) {
 			yvel += keypress[SDLK_UP]
-				? 0.12*P : 0.28*P; // Fall slower when pressing up
-			SET_MAX(yvel, 8*P);  // maximum falling speed
+				? 0.12 : 0.28; // Fall slower when pressing up
+			SET_MAX(yvel, 8);  // maximum falling speed
 		}
 		else {
 			printf("Bad character state!\n");
@@ -76,7 +76,7 @@ struct Character : public Object {
 			if (dynamic_cast<Solid*>(other))
 				if (contact(other) == TOP)
 					state = STANDING;
-		camera.follow(this, 96*P);
+		camera.follow(this, 96);
 	}
 
 };

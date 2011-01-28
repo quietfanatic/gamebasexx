@@ -3,34 +3,71 @@
 
 #include <stdint.h>
 
-#ifdef GAMEBASE_USE_FLOAT
-#define GAMEBASE_COORD_TYPE float
-#define GAMEBASE_LONG_COORD_TYPE double
-#define P 1.0
-#define COORD_MIN -100000.0  // Arbitrary
-#define COORD_MAX 100000.0
-#else
-#ifdef GAMEBASE_USE_FP
-
-#ifndef GAMEBASE_FP_HIGH
-#define GAMEBASE_FP_HIGH 65536
-#define P GAMEBASE_FP_HIGH
+#ifndef COORD_REPR
+#define COORD_REPR int32_t
+#endif
+#ifndef COORD_FRAC
+#define COORD_FRAC 65536
 #endif
 
-#define GAMEBASE_COORD_TYPE int32
-#define GAMEBASE_LONG_COORD_TYPE int64
-#define COORD_MIN -2147483648
-#define COORD_MAX 2147483647
+
+ // The coord type is a fixed-point representation with only minimal arithmetic.
+ // The reason for using fixed-point here is not speed, but consistent accuracy.
+ // For more complex math floating point is used.
+
+struct coord {
+	COORD_REPR repr;
+	 // Conversion
+	coord () { }
+	template <class T>
+	coord (T x) :repr(x*COORD_FRAC) { }
+	template <class T>
+	operator T () {
+		 // Differentiate between floatly and intly
+		 // Ought to be optimized away
+		if ((T)0.5 == (T)0)
+			return repr / COORD_FRAC;
+		else
+			return repr / (double) COORD_FRAC;
+	}
+};
+
+ // Arithmetic (hopefully these'll all be inlined)
+inline coord operator - (coord x) { coord r; r.repr = -x.repr; return r; }
+
+inline coord operator + (coord x, coord y) { coord r; r.repr = x.repr + y.repr; return r; }
+inline coord operator - (coord x, coord y) { coord r; r.repr = x.repr - y.repr; return r; }
+inline coord operator % (coord x, coord y) { coord r; r.repr = x.repr % y.repr; return r; }
+inline double operator * (coord x, coord y) { return (double)x * (double)y; }
+inline double operator / (coord x, coord y) { return (double)x / (double)y; }
+inline coord& operator += (coord& x, coord y) { x.repr += y.repr; return x; }
+inline coord& operator -= (coord& x, coord y) { x.repr -= y.repr; return x; }
+inline coord& operator %= (coord& x, coord y) { x.repr %= y.repr; return x; }
+template <class T> inline coord operator + (coord x, T y) { return x + (coord)y; }
+template <class T> inline coord operator - (coord x, T y) { return x - (coord)y; }
+template <class T> inline coord operator % (coord x, T y) { return x % (coord)y; }
+template <class T> inline coord& operator += (coord& x, T y) { return x += (coord)y; }
+template <class T> inline coord& operator -= (coord& x, T y) { return x -= (coord)y; }
+template <class T> inline coord& operator %= (coord& x, T y) { return x %= (coord)y; }
+template <class T> inline T operator * (coord x, T y) { return (T)x * y; }
+template <class T> inline T operator / (coord x, T y) { return (T)x / y; }
+ // Comparison  (Note that comparisons to other types use coord's accuracy)
+inline bool operator == (coord x, coord y) { return x.repr == y.repr; }
+inline bool operator != (coord x, coord y) { return x.repr != y.repr; }
+inline bool operator > (coord x, coord y) { return x.repr > y.repr; }
+inline bool operator < (coord x, coord y) { return x.repr < y.repr; }
+inline bool operator >= (coord x, coord y) { return x.repr >= y.repr; }
+inline bool operator <= (coord x, coord y) { return x.repr <= y.repr; }
+template <class T> inline bool operator == (coord x, T y) { return x == (coord)y; }
+template <class T> inline bool operator != (coord x, T y) { return x != (coord)y; }
+template <class T> inline bool operator > (coord x, T y) { return x > (coord)y; }
+template <class T> inline bool operator < (coord x, T y) { return x < (coord)y; }
+template <class T> inline bool operator >= (coord x, T y) { return x >= (coord)y; }
+template <class T> inline bool operator <= (coord x, T y) { return x <= (coord)y; }
 
 
-#else
-#define GAMEBASE_COORD_TYPE int16
-#define GAMEBASE_LONG_COORD_TYPE int32
-#define COORD_MIN -32768
-#define COORD_MAX 32767
-#define P 1
-#endif
-#endif
 
+
+static inline coord coord_wrap (COORD_REPR x) { coord r; r.repr = x; return r; }
 
 #endif

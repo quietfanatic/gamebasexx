@@ -29,9 +29,7 @@ typedef uint8 side8;
 
 #include "coord.h"
 
-typedef GAMEBASE_COORD_TYPE coord;
-typedef GAMEBASE_LONG_COORD_TYPE long_coord;
-struct Mouse { coord x; coord y; coord xvel; coord yvel; };
+struct Mouse { coord x; coord y; float xvel; float yvel; };
 
 #include "util.h"
 

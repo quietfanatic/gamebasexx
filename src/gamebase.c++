@@ -78,10 +78,10 @@ void gamebase_main_loop() {
 #ifdef GAMEBASE_CAREFUL
 		for (cur = last_object; cur; cur = cur->prev) {
 			if (!careful_far_warn)
-			if (cur->x < COORD_MIN + 20*P
-			 || cur->y < COORD_MIN + 20*P
-			 || cur->x > COORD_MAX - 20*P
-			 || cur->y > COORD_MAX - 20*P) {
+			if (cur->x < -65000
+			 || cur->y < -65000
+			 || cur->x > 65000
+			 || cur->y > 65000) {
 				careful_far_warn = 1;
 				printf("Warning: An object is very far from the room and has not been deleted.\n");
 			}
@@ -199,8 +199,8 @@ void game_quit() {
 void set_video() {
 	SDL_setFramerate(&fpsm, current_room->fps);
 	game_window = SDL_SetVideoMode(
-		(camera.w != 0 ? camera.w : current_room->w)/P,
-		(camera.h != 0 ? camera.h : current_room->h)/P,
+		camera.w != 0 ? camera.w : current_room->w,
+		camera.h != 0 ? camera.h : current_room->h,
 		32,
 		window_flags|(game_fullscreen ? SDL_FULLSCREEN : 0)
 	);

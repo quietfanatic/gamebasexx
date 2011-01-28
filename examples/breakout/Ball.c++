@@ -6,10 +6,10 @@ SDL_Surface* ball_surface = NULL;
 struct Ball : public Object {
 	uint finish_timer;
 	uint alive;
-	virtual coord l () { return 3*P; }
-	virtual coord t () { return 3*P; }
-	virtual coord r () { return 3*P; }
-	virtual coord b () { return 3*P; }
+	virtual coord l () { return 3; }
+	virtual coord t () { return 3; }
+	virtual coord r () { return 3; }
+	virtual coord b () { return 3; }
 	virtual SDL_Surface* surface () { return ball_surface; }
 	Ball () : finish_timer(0), alive(0) { }
 	virtual void after_move () {
@@ -25,11 +25,11 @@ struct Ball : public Object {
 			 // bounce off paddle
 			if (bounce(paddle)) {
 				xvel += (x - paddle->x) / 6.0;
-				SET_MAX(xvel, 8*P);
-				SET_MIN(xvel, -8*P);
+				SET_MAX(xvel, 8);
+				SET_MIN(xvel, -8);
 			}
 			 // destroy bricks
-			FOR_ALL_OF_TYPE(other, Brick) {
+			FOR_COLLISIONS_BY_HIT(other, Brick) {
 			//	if (bounce(other)) {
 			//		other->remove();
 			//		brick_count--;
@@ -40,11 +40,11 @@ struct Ball : public Object {
 		}
 		else {
 			x = paddle->x;
-			y = paddle->y - 7*P;
+			y = paddle->y - 7;
 			if (keypress[SDLK_UP]) {
 				alive = 1;
-				xvel = 3*P;
-				yvel = -3*P;
+				xvel = 3;
+				yvel = -3;
 			}
 		}
 	}

@@ -6,7 +6,7 @@
 
 inline Object::Object() : next(NULL), prev(NULL) { }
 
-inline float Object::order () {return 0*P;}
+inline float Object::order () {return 0;}
 
  // Events
 inline void Object::create () {}
@@ -25,10 +25,10 @@ inline void Object::draw () {
 inline void Object::after_draw () {}
 
  // Shape
-inline coord Object::l () {return 0*P;}
-inline coord Object::t () {return 0*P;}
-inline coord Object::r () {return 0*P;}
-inline coord Object::b () {return 0*P;}
+inline coord Object::l () {return 0;}
+inline coord Object::t () {return 0;}
+inline coord Object::r () {return 0;}
+inline coord Object::b () {return 0;}
 inline geometry Object::geom () {return GEOM_RECT;}
 
 inline coord Object::L () {return x-l();}
@@ -79,50 +79,49 @@ bool Object::collision (Object* other) {
 		case (GEOM_CIRCLE|GEOM_RECT<<16): {
 			if (self->y < other->T()) {  // Top
 				if (self->x < other->L())  // Upper-left corner
-					return (       (other->T() - self->y)
-					 *(long_coord) (other->T() - self->y)
-					             + (other->L() - self->x)
-					 *(long_coord) (other->L() - self->x)
-					 < self->r() *(long_coord) self->r()
+					return ((other->T() - self->y)
+					      * (other->T() - self->y)
+					      + (other->L() - self->x)
+					      * (other->L() - self->x)
+					         < self->r() * self->r()
 					);
 				if (self->x <= other->R())  // Top middle
 					return self->B() > other->T();
 				// Upper-right corner
-					return (       (other->T() - self->y)
-					 *(long_coord) (other->T() - self->y)
-					             + (self->x - other->R())
-					 *(long_coord) (self->x - other->R())
-					 < self->r() *(long_coord) self->r()
+					return ((other->T() - self->y)
+					      * (other->T() - self->y)
+					      + (self->x - other->R())
+					      * (self->x - other->R())
+					         < self->r() * self->r()
 					);
 			}
 			if (self->y <= other->B()) // Middle
 				return self->L() < other->R() && self->R() > other->L();
 			// Bottom
 				if (self->x < other->L())  // Bottom-left corner
-					return (       (self->y - other->B())
-					 *(long_coord) (self->y - other->B())
-					             + (other->L() - self->x)
-					 *(long_coord) (other->L() - self->x)
-					 < self->r() *(long_coord) self->r()
+					return ((self->y - other->B())
+					      * (self->y - other->B())
+					      + (other->L() - self->x)
+					      * (other->L() - self->x)
+					         < self->r() * self->r()
 					);
 				if (self->x <= other->R())  // Bottom middle
 					return self->T() < other->B();
 				// Bottom-right corner
-					return (       (self->y - other->B())
-					 *(long_coord) (self->y - other->B())
-					             + (self->x - other->R())
-					 *(long_coord) (self->x - other->R())
-					 < self->r() *(long_coord) self->r()
+					return ((self->y - other->B())
+					      * (self->y - other->B())
+					      + (self->x - other->R())
+					      * (self->x - other->R())
+					         < self->r() * self->r()
 					);
 		}
 		case (GEOM_CIRCLE|GEOM_CIRCLE<<16): {
-			long_coord sqdist = (self->x - other->x)
-			      *(long_coord) (self->x - other->x)
-				              + (self->y - other->y)
-			      *(long_coord) (self->y - other->y);
-			return sqdist < ( (self->r() + other->r())
-			    *(long_coord) (self->r() + other->r())
-			);
+			double sqdist = (self->x - other->x)
+			              * (self->x - other->x)
+				          + (self->y - other->y)
+			              * (self->y - other->y);
+			return sqdist < (self->r() + other->r())
+			              * (self->r() + other->r());
 		}
 	}
 	return false;
@@ -188,30 +187,30 @@ side Object::collision_side (Object* other) {
 	 // if xv/yv >= x/y then xv*y >= x*yv
 	 // Comparisons are tricky because xv and yv can be negative.
 	 // Basically we're overoptimizing by avoiding division :)
-	long_coord x_yv;
-	long_coord y_xv;
+	double x_yv;
+	double y_xv;
 	if (yv > 0) {  // Going down
-		y_xv = (B() - other->T()) *(long_coord) xv;
-		if (xvel > 0) {  // Going right
-			x_yv = (R() - other->L()) *(long_coord) yv;
+		y_xv = (B() - other->T()) * xv;
+		if (xv > 0) {  // Going right
+			x_yv = (R() - other->L()) * yv;
 			if (x_yv >= y_xv) r |= TOP;
 			if (x_yv <= y_xv) r |= LEFT;
 		}
 		else {  // Going left
-			x_yv = (other->R() - L()) *(long_coord) yv;
+			x_yv = (other->R() - L()) * yv;
 			if (x_yv >= -y_xv) r |= TOP;
 			if (x_yv <= -y_xv) r |= RIGHT;
 		}
 	}
 	else {  // Going up
-		y_xv = (other->B() - T()) *(long_coord) xv;
-		if (xvel > 0) {  // Going right
-			x_yv = (R() - other->L()) *(long_coord) yv;
+		y_xv = (other->B() - T()) * xv;
+		if (xv > 0) {  // Going right
+			x_yv = (R() - other->L()) * yv;
 			if (-x_yv >= y_xv) r |= BOTTOM;
 			if (-x_yv <= y_xv) r |= LEFT;
 		}
 		else {  // Going left
-			x_yv = (other->R() - L()) *(long_coord) yv;
+			x_yv = (other->R() - L()) * yv;
 			if (-x_yv >= -y_xv) r |= BOTTOM;
 			if (-x_yv <= -y_xv) r |= RIGHT;
 		}
@@ -257,13 +256,9 @@ Object** Object::get_collisions_obj (object_type T, bool order_by_hit) {
 			 // If xvel=1 and yvel=-1 then the smallest x-y is first
 			 // If xvel=-1 and yvel=-1 then the smallest -x-y is first
 			 // Smallest xvel*x + yvel*y
-			long_coord xv = xvel;
-			long_coord yv = yvel;
-			if (Object* m = dynamic_cast<Object*>(other)) {
-				xv -= m->xvel;
-				yv -= m->yvel;
-			}
-			long_coord cmp = xv*other->x + yv*other->y;
+			double xv = xvel - other->xvel;
+			double yv = yvel - other->yvel;
+			double cmp = xv*other->x + yv*other->y;
 			 // Add to list, in order.
 			for (uint i = 0; i < ncolls; i++) {
 				if (colls[i] == NULL) { colls[i] = other; break; } // last
@@ -330,23 +325,23 @@ side Object::kinetic_bounce (Object* other, double elasticity, side dir) {
 	if (collision(other)) {
 		dir &= collision_side(other);
 		if (dir&(TOP|BOTTOM)) {
-			double sm = ((double)yvel/P) * mass();
-			double om = ((double)other->yvel/P) * other->mass();
+			double sm = yvel * mass();
+			double om = other->yvel * other->mass();
 			double tm = sm + om;
 			double tv = tm / (mass() + other->mass());
-			yvel = (tv - (yvel/P - tv)*elasticity)*P;
-			other->yvel = (tv - (other->yvel/P - tv)*elasticity)*P;
+			yvel = tv - (yvel - tv)*elasticity;
+			other->yvel = tv - (other->yvel - tv)*elasticity;
 			double time = collision_time(other, dir);
 			y += yvel * (1-time);
 			other->y += other->yvel * (1-time);
 		}
 		if (dir&(LEFT|RIGHT)) {
-			double sm = ((double)xvel/P) * mass();
-			double om = ((double)other->xvel/P) * other->mass();
+			double sm = xvel * mass();
+			double om = other->xvel * other->mass();
 			double tm = sm + om;
 			double tv = tm / (mass() + other->mass());
-			xvel = (tv - (xvel/P - tv)*elasticity)*P;
-			other->xvel = (tv - (other->xvel/P - tv)*elasticity)*P;
+			xvel = tv - (xvel - tv)*elasticity;
+			other->xvel = tv - (other->xvel - tv)*elasticity;
 			double time = collision_time(other, dir);
 			x += xvel * (1-time);
 			other->x += other->xvel * (1-time);

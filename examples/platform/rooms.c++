@@ -4,7 +4,7 @@
 
 
 
-#define U 32*P
+#define U 32
 
 
 
@@ -16,8 +16,8 @@ struct room1 : public Room {
 		fps = 60;
 		camera_start.x = 0;
 		camera_start.y = 0;
-		camera_start.w = 640*P;
-		camera_start.h = 480*P;
+		camera_start.w = 640;
+		camera_start.h = 480;
 	}
 
 	VM(uint32 color, 0xc0c0c0);
