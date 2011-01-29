@@ -326,29 +326,37 @@ side Object::kinetic_bounce (Object* other, double elasticity, side dir) {
 		dir &= collision_side(other);
 		if (dir&(TOP|BOTTOM)) {
 			double tv = 0;
-			if (mass() == INF)
+			if (mass() == INF || other->mass() == 0) {
 				tv += yvel;  // General formula doesn't quite work with infinite masses
-			if (other->mass() == INF)
+				if (other->mass() == INF || mass() == 0) goto oinfy;
+			}
+			else if (other->mass() == INF || mass() == 0) {
+				oinfy:
 				tv += other->yvel;
-			if (tv != 0.0) {  // Total velocity of system
+			}
+			else {  // Total velocity of system
 				tv = (yvel * mass() + other->yvel * other->mass())
 				   / (mass() + other->mass());
 			}
 			coord oldyv = yvel;
 			coord oldoyv = other->yvel;
-			other->yvel = tv - (other->yvel - tv)*elasticity;
 			double time = collision_time(other, dir);
+			other->yvel = tv - (other->yvel - tv)*elasticity;
 			yvel = tv - (yvel - tv)*elasticity;
 			y += (yvel - oldyv) * (1-time);
 			other->y += (other->yvel - oldoyv) * (1-time);
 		}
 		if (dir&(LEFT|RIGHT)) {
 			double tv = 0;
-			if (mass() == INF)
+			if (mass() == INF || other->mass() == 0) {
 				tv += xvel;
-			if (other->mass() == INF)
+				if (other->mass() == INF || mass() == 0) goto oinfx;
+			}
+			else if (other->mass() == INF || mass() == 0) {
+				oinfx:
 				tv += other->xvel;
-			if (tv != 0.0) {
+			}
+			else {
 				tv = (xvel * mass() + other->xvel * other->mass())
 				   / (mass() + other->mass());
 			}
