@@ -30,12 +30,12 @@ struct Ball : public Object {
 			}
 			 // destroy bricks
 			FOR_COLLISIONS_BY_HIT(other, Brick) {
-			//	if (bounce(other)) {
-			//		other->remove();
-			//		brick_count--;
-			//		if (brick_count == 0) finish_timer = 1;
-			//	}
-				kinetic_bounce(other);
+				if (bounce(other)) {
+					other->remove();
+					brick_count--;
+					if (brick_count == 0) finish_timer = 1;
+				}
+			//	kinetic_bounce(other);
 			}
 		}
 		else {
