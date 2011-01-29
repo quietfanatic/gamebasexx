@@ -17,7 +17,7 @@ void game_init() {
 	if (game_initted) return;
 	game_initted = 1;
 	if (SDL_Init(SDL_INIT_VIDEO) == -1) {
-		printf("%s\n", SDL_GetError());
+		printf("Init error: %s\n", SDL_GetError());
 	}
 
 	 // Keypress array

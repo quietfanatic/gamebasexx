@@ -23,6 +23,7 @@ struct room1 : public Room {
 	VM(uint32 color, NO_COLOR);
 	static SDL_Surface* bg;
 	virtual SDL_Surface* surface () { return bg; }
+	virtual float scroll_factor () { return 0.5; }
 	virtual void init () {
 		Block* b;
 		uint i;
