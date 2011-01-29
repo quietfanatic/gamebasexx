@@ -70,8 +70,8 @@ inline void draw_color (uint32 color, coord l, coord t, coord r, coord b) {
 	SDL_Rect draw_rect = {
 		(int16)(l - camera.x),
 		(int16)(t - camera.y),
-		(uint16)(r - l),
-		(uint16)(b - t)
+		(int16)(r - l),
+		(int16)(b - t)
 	};
 	SDL_FillRect(
 		game_window,
@@ -93,6 +93,47 @@ inline void draw_surface (SDL_Surface* surface, coord x, coord y) {
 	);
 }
 
+void draw_surface_clipped (SDL_Surface* surface, coord x, coord y, coord l, coord t, coord r, coord b) {
+	SDL_Rect draw_rect = {(int16)(x - camera.x), (int16)(y - camera.y), 0, 0};
+	SDL_Rect clip_rect = {
+		(int16)(l - camera.x),
+		(int16)(t - camera.y),
+		(uint16)(r - l),
+		(uint16)(b - t),
+	};
+	SDL_Rect oldclip = surface->clip_rect;
+	SDL_SetClipRect(surface, &clip_rect);
+	SDL_BlitSurface(
+		surface,
+		NULL,
+		game_window,
+		&draw_rect
+	);
+	SDL_SetClipRect(surface, &oldclip);
+}
+
+void draw_pattern (SDL_Surface* surface, coord l, coord t, coord r, coord b, coord xoff, coord yoff) {
+	SDL_Rect clip_rect = {
+		(int16)(l - camera.x),
+		(int16)(t - camera.y),
+		(uint16)(r - l),
+		(uint16)(b - t)
+	};
+	SDL_Rect oldclip = surface->clip_rect;
+	SDL_SetClipRect(surface, &clip_rect);
+	for (coord y = t + yoff % surface->h - surface->h; y < b; y += surface->h)
+	for (coord x = l + xoff % surface->w - surface->w; x < r; x += surface->w) {
+		SDL_Rect draw_rect = {(int16)(x - camera.x), (int16)(y - camera.y), 0, 0};
+		SDL_BlitSurface(
+			surface,
+			NULL,
+			game_window,
+			&draw_rect
+		);
+	}
+
+	SDL_SetClipRect(surface, &oldclip);
+}
 
 
 #endif

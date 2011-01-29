@@ -20,7 +20,9 @@ struct room1 : public Room {
 		camera_start.h = 480;
 	}
 
-	VM(uint32 color, 0xc0c0c0);
+	VM(uint32 color, NO_COLOR);
+	static SDL_Surface* bg;
+	virtual SDL_Surface* surface () { return bg; }
 	virtual void init () {
 		Block* b;
 		uint i;
@@ -49,7 +51,8 @@ struct room1 : public Room {
 		m = new Mover; m->x = 20*U; m->y = 9*U; m->insert();
 	}
 };
-		
+
+SDL_Surface* room1::bg = load_image("bg.png");
 
 
 

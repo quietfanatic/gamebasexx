@@ -16,7 +16,10 @@ uint careful_far_warn = 0;
 void game_init() {
 	if (game_initted) return;
 	game_initted = 1;
-	SDL_Init(SDL_INIT_VIDEO);
+	if (SDL_Init(SDL_INIT_VIDEO) == -1) {
+		printf("%s\n", SDL_GetError());
+	}
+
 	 // Keypress array
 	uint i;
 	for (i=0; i < 400; i++) {

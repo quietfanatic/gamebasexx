@@ -18,6 +18,7 @@ struct Room : public Inverted< Resizable<Object> > {
 	float fps;         // Framerate of game
 	virtual void init ();  // Create starting objects
 	virtual uint32 color ();  // Background color
+	virtual float scroll_factor ();  // Background scrolling multiplier (distance)
 	virtual void draw ();  // And the draw() because of Inverted<> :|
 	Room ();
 	void start ();

@@ -4,7 +4,7 @@
 #include "objects/Room.h"
 #include "objects/Resizable.c++"
 #include "objects/Inverted.c++"
-
+#include "objects/Perspective.c++"
 
 inline void Camera::constrain (Room* bound) {
 	SET_MIN(x, bound->x);  // left
@@ -30,8 +30,17 @@ inline void Camera::center (Object* o, bool constrain) {
 inline void Room::init () { }  // Create starting objects;
 Room::Room () : fps(30) { w = 640; h = 480; }
 inline uint32 Room::color () { return 0x000000; }  // Black background
+inline float Room::scroll_factor () { return 1.0; }
 inline void Room::draw () {
-	draw_color(color(), R(), B(), L(), T());
+	if (color() != NO_COLOR)
+		draw_color(color(), R(), B(), L(), T());
+	if (surface())
+		draw_pattern(
+			surface(),
+			camera.R(), camera.B(),
+			camera.L(), camera.T(),
+			-camera.x*scroll_factor(), -camera.y*scroll_factor()
+		);
 }
 
 void Room::start () {

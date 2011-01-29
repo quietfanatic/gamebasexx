@@ -100,7 +100,6 @@ uint32 window_flags = SDL_SWSURFACE;
 uint32 surface_flags = SDL_SWSURFACE;
 #endif
 
-
 /////// Functions
 
 void game_init();
@@ -118,6 +117,8 @@ SDL_Surface** split_strip  (SDL_Surface* image, uint width, uint height);
          void draw_color   (uint32 c, coord l, coord t, coord r, coord b);
          void draw_color   (uint32 c, Object* o);
          void draw_surface (SDL_Surface* surface, coord x, coord y);
+		 void draw_surface_clipped (SDL_Surface* surface, coord x, coord y, coord l, coord t, coord r, coord b);
+		 void draw_pattern (SDL_Surface* surface, coord l, coord t, coord r, coord b, coord xoff = 0, coord yoff = 0);
 
 
 
