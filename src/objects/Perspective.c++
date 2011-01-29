@@ -1,3 +1,5 @@
+#ifndef HAVE_PERSPECTIVE_CPP
+#define HAVE_PERSPECTIVE_CPP
 
 
 template <class O>
@@ -14,4 +16,4 @@ struct Perspective : public O {
 	}
 };
 
-
+#endif
