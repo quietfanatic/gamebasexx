@@ -69,6 +69,7 @@ struct Object : public gc {
 	side contact (Object* other, side dir = ALLSIDES);
 	side bounce (Object* other, side dir = ALLSIDES);
 	side kinetic_bounce (Object* other, double elasticity = 1.0, side dir = ALLSIDES);
+	void impulse (Object* other, double xstr, double ystr);
 
 	 // Misc state
 	side out_of_room ();

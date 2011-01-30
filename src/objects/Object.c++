@@ -373,6 +373,36 @@ side Object::kinetic_bounce (Object* other, double elasticity, side dir) {
 	return 0;
 }
 
+ // Impulse; apply force (over 1 frame) to another object
+void Object::impulse (Object* other, double xi, double yi) {
+	if (mass() == INF) {
+		if (other->mass() == INF) {
+			other->xvel += xi/2;
+			other->yvel += yi/2;
+			xvel -= xi/2;
+			yvel -= yi/2;
+			return;
+		}
+		other->xvel += xi;
+		other->yvel += yi;
+		return;
+	}
+	if (other->mass() == INF) {
+		xvel -= xi;
+		yvel -= yi;
+		return;
+	}
+	double tm = mass() + other->mass();
+	if (xi) {
+		other->xvel += xi * mass() / tm;
+		xvel -= xi * other->mass() / tm;
+	}
+	if (yi) {
+		other->yvel += yi * mass() / tm;
+		yvel -= yi * other->mass() / tm;
+	}
+}
+
 
 
  // Misc state
