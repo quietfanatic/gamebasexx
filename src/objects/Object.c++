@@ -221,13 +221,13 @@ side Object::collision_side (Object* other) {
 double Object::collision_time (Object* other, side dir) {
 	if (!dir) dir = collision_side(other);
 	if (dir&LEFT)
-		return 1-((R() - other->L()) / (xvel + other->xvel));
+		return 1-((R() - other->L()) / (xvel - other->xvel));
 	if (dir&TOP)
-		return 1-((B() - other->T()) / (yvel + other->yvel));
+		return 1-((B() - other->T()) / (yvel - other->yvel));
 	if (dir&RIGHT)
-		return 1-((L() - other->R()) / (xvel + other->xvel));
+		return 1-((L() - other->R()) / (xvel - other->xvel));
 	if (dir&BOTTOM)
-		return 1-((T() - other->B()) / (yvel + other->yvel));
+		return 1-((T() - other->B()) / (yvel - other->yvel));
 	return INF;  // Objects'll never hit.
 }
 
@@ -341,8 +341,8 @@ side Object::kinetic_bounce (Object* other, double elasticity, side dir) {
 			coord oldyv = yvel;
 			coord oldoyv = other->yvel;
 			double time = collision_time(other, dir);
-			other->yvel = tv - (other->yvel - tv)*elasticity;
 			yvel = tv - (yvel - tv)*elasticity;
+			other->yvel = tv - (other->yvel - tv)*elasticity;
 			y += (yvel - oldyv) * (1-time);
 			other->y += (other->yvel - oldoyv) * (1-time);
 		}
