@@ -30,6 +30,12 @@
 		(b) = _tmp; \
 	}
 
+#define MAX(a, b) \
+	((a) > (b) ? (a) : (b))
+
+#define MIN(a, b) \
+	((a) < (b) ? (a) : (b))
+
 #define SET_MAX(var, max) \
 	if ((var) > (max)) (var) = (max)
 
