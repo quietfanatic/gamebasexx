@@ -163,7 +163,7 @@ side Object::detect_side (Object* other) {
 	return NOSIDE;
 }
 
-side Object::collision_side (Object* other) {
+side Object::collision_side (Object* other, coord slip) {
 	if (other->geom() == GEOM_BOUNDARY) {
 		return detect_side(other);
 	}
@@ -171,50 +171,51 @@ side Object::collision_side (Object* other) {
 	coord xv = xvel - other->xvel;
 	coord yv = yvel - other->yvel;
 	
-	if (xv == 0) {
-		return
-		  yv > 0 ? TOP 
-		: yv < 0 ? BOTTOM
-		: NOSIDE;
-	}
-	if (yv == 0) {
-		return
-		  xv > 0 ? LEFT
-		: xv < 0 ? RIGHT
-		: NOSIDE;
-	}
+	//if (xv <= 2/65536.0 && xv >= -2/65536.0 ) {
+	//	return
+	//	  yv > 2/65536.0 ? TOP 
+	//	: yv < -2/65536.0 ? BOTTOM
+	//	: NOSIDE;
+	//}
+	//if (yv <= 2/65536.0 && yv >= -2/65536.0 ) {
+	//	return
+	//	  xv > 2/65536.0 ? TOP 
+	//	: xv < -2/65536.0 ? BOTTOM
+	//	: NOSIDE;
+	//}
 	 // We compare the ratio of xvel to yvel with x diff to y diff
 	 // if xv/yv >= x/y then xv*y >= x*yv
 	 // Comparisons are tricky because xv and yv can be negative.
 	 // Basically we're overoptimizing by avoiding division :)
 	double x_yv;
 	double y_xv;
-	if (yv > 0) {  // Going down
-		y_xv = (B() - other->T()) * xv;
-		if (xv > 0) {  // Going right
-			x_yv = (R() - other->L()) * yv;
+	if (yv >= 0) {  // Going down
+		y_xv = (B() - other->T() - slip) * xv;
+		if (xv >= 0) {  // Going right
+			x_yv = (R() - other->L() - slip) * yv;
 			if (x_yv >= y_xv) r |= TOP;
 			if (x_yv <= y_xv) r |= LEFT;
 		}
 		else {  // Going left
-			x_yv = (other->R() - L()) * yv;
+			x_yv = (other->R() - L() + slip) * yv;
 			if (x_yv >= -y_xv) r |= TOP;
 			if (x_yv <= -y_xv) r |= RIGHT;
 		}
 	}
 	else {  // Going up
-		y_xv = (other->B() - T()) * xv;
-		if (xv > 0) {  // Going right
-			x_yv = (R() - other->L()) * yv;
+		y_xv = (other->B() - T() + slip) * xv;
+		if (xv >= 0) {  // Going right
+			x_yv = (R() - other->L() - slip) * yv;
 			if (-x_yv >= y_xv) r |= BOTTOM;
 			if (-x_yv <= y_xv) r |= LEFT;
 		}
 		else {  // Going left
-			x_yv = (other->R() - L()) * yv;
+			x_yv = (other->R() - L() + slip) * yv;
 			if (-x_yv >= -y_xv) r |= BOTTOM;
 			if (-x_yv <= -y_xv) r |= RIGHT;
 		}
 	}
+	if (collision_time(other, r) <= -2) return NOSIDE;  // Bad workaround for bad bug
 	return r;
 }
 

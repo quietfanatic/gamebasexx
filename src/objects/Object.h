@@ -60,7 +60,7 @@ struct Object : public gc {
 	bool collision (Object* other);
 	bool collision_rect (coord rl, coord rt, coord rr, coord rb);
 	side detect_side (Object* other);
-	side collision_side (Object* other);
+	side collision_side (Object* other, coord slip = 2.0/COORD_FRAC);
 	double collision_time (Object* other, side dir = NOSIDE);
 	template <class T = Object>
 		T** get_collisions (bool order_by_hit = true);
